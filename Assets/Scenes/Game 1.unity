@@ -6475,6 +6475,9 @@ MonoBehaviour:
     world: {x: 0.25, y: 0.25, z: 0}
   - grid: {x: 1, y: 1, z: 1}
     world: {x: 0.25, y: 0.25, z: 0.25}
+  healthyMaterial: {fileID: 2100000, guid: eed3d7c4506c647f99215e47d9d52f5e, type: 2}
+  rottenMaterial: {fileID: 2100000, guid: 430855f0f86e74b1cbd739262ebde1d9, type: 2}
+  rottenChance: 0.519
 --- !u!4 &1070629305
 Transform:
   m_ObjectHideFlags: 0

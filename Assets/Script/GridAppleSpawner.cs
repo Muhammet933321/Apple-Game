@@ -26,6 +26,11 @@ public class GridAppleSpawner : MonoBehaviour
 
     private GameObject currentApple;          // the one that’s currently in the scene
     private readonly System.Random rng = new();   // for deterministic unit tests, seed here
+    
+    public Material   healthyMaterial;      // assign in Inspector
+    public Material   rottenMaterial;  
+    [Range(0f, 1f)]
+    public float rottenChance = 0.3f;       // 30 % rotten by default
 
     /* ─────────── Unity lifecycle ─────────── */
 
@@ -59,13 +64,34 @@ public class GridAppleSpawner : MonoBehaviour
 
     private void SpawnRandomApple()
     {
-        if (applePrefab == null) { Debug.LogError("Apple prefab missing!", this); return; }
+        if (applePrefab == null || healthyMaterial == null || rottenMaterial == null)
+        {
+            Debug.LogError($"{name}: Prefab or materials not assigned!", this);
+            return;
+        }
 
-        int index = rng.Next(positions.Count);          // pick a random cell
-        currentApple = Instantiate(applePrefab,
-                                   transform.position+positions[index].world,
-                                   Quaternion.identity,
-                                   transform);
+        // 1 – pick a random cell
+        int index = rng.Next(positions.Count);
+        Vector3 spawnPos = positions[index].world;
+
+        // 2 – instantiate
+        currentApple = Instantiate(applePrefab, transform.position+spawnPos, Quaternion.identity, transform);
+
+        // 3 – choose type & apply material
+        bool makeRotten = rng.NextDouble() < rottenChance;
+        var apple       = currentApple.GetComponent<Apple>();
+        var renderer    = currentApple.GetComponentInChildren<Renderer>();
+
+        if (makeRotten)
+        {
+            apple.appleType   = AppleType.Rotten;
+            renderer.material = rottenMaterial;
+        }
+        else
+        {
+            apple.appleType   = AppleType.Healthy;
+            renderer.material = healthyMaterial;
+        }
     }
 
     private void HandleApplePicked(Apple picked)
