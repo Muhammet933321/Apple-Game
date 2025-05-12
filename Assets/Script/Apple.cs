@@ -5,9 +5,12 @@ public class Apple : MonoBehaviour
 {
     private AppleSpawner _appleSpawner = null;
     public AppleType appleType;
+    public GameObject appleAnim;
     
     private float minTouch = 3f;
     private float touchStarted = 0f;
+    
+    private bool isAnimPlaying = false;
 
     private void Start()
     {
@@ -16,6 +19,7 @@ public class Apple : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        isAnimPlaying = true;
         if (other.CompareTag("Controller"))
         {
             Debug.Log("Apple entered");
@@ -27,6 +31,7 @@ public class Apple : MonoBehaviour
     
     private void OnTriggerExit(Collider other)
     {
+        isAnimPlaying = false;
         if (other.CompareTag("Controller"))
         {
             if (Time.time - touchStarted > minTouch)
@@ -43,5 +48,16 @@ public class Apple : MonoBehaviour
         if(_appleSpawner.spawnLevel == AppleSpawner.SpawnLevel.Level6)
             _appleSpawner.InteractApple(gameObject);
     }
-    
+
+    private void Update()
+    {
+        if (isAnimPlaying && !appleAnim.activeSelf)
+        {
+            appleAnim.SetActive(true);
+        }
+        if (!isAnimPlaying && appleAnim.activeSelf)
+        {
+            appleAnim.SetActive(false);
+        }
+    }
 }
