@@ -18,6 +18,6 @@ public class Basket : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if(other.GetComponent<Apple>().appleType == basketType)
-            _appleSpawner.InteractApple(other.gameObject);
+            other.GetComponent<Apple>().Pick();
     }
 }
