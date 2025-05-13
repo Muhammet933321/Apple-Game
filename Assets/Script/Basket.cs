@@ -1,5 +1,7 @@
-using System;
+using DG.Tweening;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
+
 public enum AppleType
 {
     Healthy,
@@ -17,7 +19,13 @@ public class Basket : MonoBehaviour
     
     private void OnTriggerEnter(Collider other)
     {
-        if(other.GetComponent<Apple>().appleType == basketType)
-            other.GetComponent<Apple>().Pick();
+        if (other.GetComponent<Apple>().appleType == basketType)
+        {
+            other.GetComponent<XRGrabInteractable>().enabled = false;
+            other.transform.DOScale(Vector3.zero, 0.5f);
+            other.transform.DOMove(transform.position, 0.5f).OnComplete(()=>other.GetComponent<Apple>().Pick());
+            
+        }
+           
     }
 }

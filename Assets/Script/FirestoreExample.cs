@@ -364,7 +364,7 @@ private IEnumerator CheckForCurrentLevelChange()
             string progressId = auth.CurrentUser.UserId.ToString(); // assuming progress doc is linked to appointment ID
             int dayOffset = 0; // today
 
-            int holdDuration = Mathf.RoundToInt(FindAnyObjectByType<GrabDurationChecker>().GetAverageGrabDuration());
+            int holdDuration = 0;
 
             await AppendProgressDataAsync(progressId, spawner.GetProgress(),  holdDuration, dayOffset);
 

@@ -6301,7 +6301,7 @@ Transform:
   m_GameObject: {fileID: 1042927087}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.3, y: 0.736, z: 0.506}
+  m_LocalPosition: {x: 0.3, y: 0.584, z: 0.506}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -6388,111 +6388,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4661435515762813124, guid: e289bf5debb17f6459818c207d781953, type: 3}
   m_PrefabInstance: {fileID: 1054544124}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1070629303
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1070629305}
-  - component: {fileID: 1070629304}
-  m_Layer: 0
-  m_Name: GridAppleSpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1070629304
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1070629303}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8eeb26b88946649f2a844a368d25500f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  applePrefab: {fileID: 5441553946450191219, guid: 0fa7b5d2aa7b44cbb9c718c274f1fbe6, type: 3}
-  range: 1
-  spacing: 0.25
-  positions:
-  - grid: {x: -1, y: -1, z: -1}
-    world: {x: -0.25, y: -0.25, z: -0.25}
-  - grid: {x: -1, y: -1, z: 0}
-    world: {x: -0.25, y: -0.25, z: 0}
-  - grid: {x: -1, y: -1, z: 1}
-    world: {x: -0.25, y: -0.25, z: 0.25}
-  - grid: {x: -1, y: 0, z: -1}
-    world: {x: -0.25, y: 0, z: -0.25}
-  - grid: {x: -1, y: 0, z: 0}
-    world: {x: -0.25, y: 0, z: 0}
-  - grid: {x: -1, y: 0, z: 1}
-    world: {x: -0.25, y: 0, z: 0.25}
-  - grid: {x: -1, y: 1, z: -1}
-    world: {x: -0.25, y: 0.25, z: -0.25}
-  - grid: {x: -1, y: 1, z: 0}
-    world: {x: -0.25, y: 0.25, z: 0}
-  - grid: {x: -1, y: 1, z: 1}
-    world: {x: -0.25, y: 0.25, z: 0.25}
-  - grid: {x: 0, y: -1, z: -1}
-    world: {x: 0, y: -0.25, z: -0.25}
-  - grid: {x: 0, y: -1, z: 0}
-    world: {x: 0, y: -0.25, z: 0}
-  - grid: {x: 0, y: -1, z: 1}
-    world: {x: 0, y: -0.25, z: 0.25}
-  - grid: {x: 0, y: 0, z: -1}
-    world: {x: 0, y: 0, z: -0.25}
-  - grid: {x: 0, y: 0, z: 0}
-    world: {x: 0, y: 0, z: 0}
-  - grid: {x: 0, y: 0, z: 1}
-    world: {x: 0, y: 0, z: 0.25}
-  - grid: {x: 0, y: 1, z: -1}
-    world: {x: 0, y: 0.25, z: -0.25}
-  - grid: {x: 0, y: 1, z: 0}
-    world: {x: 0, y: 0.25, z: 0}
-  - grid: {x: 0, y: 1, z: 1}
-    world: {x: 0, y: 0.25, z: 0.25}
-  - grid: {x: 1, y: -1, z: -1}
-    world: {x: 0.25, y: -0.25, z: -0.25}
-  - grid: {x: 1, y: -1, z: 0}
-    world: {x: 0.25, y: -0.25, z: 0}
-  - grid: {x: 1, y: -1, z: 1}
-    world: {x: 0.25, y: -0.25, z: 0.25}
-  - grid: {x: 1, y: 0, z: -1}
-    world: {x: 0.25, y: 0, z: -0.25}
-  - grid: {x: 1, y: 0, z: 0}
-    world: {x: 0.25, y: 0, z: 0}
-  - grid: {x: 1, y: 0, z: 1}
-    world: {x: 0.25, y: 0, z: 0.25}
-  - grid: {x: 1, y: 1, z: -1}
-    world: {x: 0.25, y: 0.25, z: -0.25}
-  - grid: {x: 1, y: 1, z: 0}
-    world: {x: 0.25, y: 0.25, z: 0}
-  - grid: {x: 1, y: 1, z: 1}
-    world: {x: 0.25, y: 0.25, z: 0.25}
-  healthyMaterial: {fileID: 2100000, guid: eed3d7c4506c647f99215e47d9d52f5e, type: 2}
-  rottenMaterial: {fileID: 2100000, guid: 430855f0f86e74b1cbd739262ebde1d9, type: 2}
-  rottenChance: 0.519
---- !u!4 &1070629305
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1070629303}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1073249806
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6803,7 +6698,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1666320187805933383}
@@ -9446,6 +9341,112 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8903058273634951509, guid: f1fc5bb90ac285e4486771552d63bcb8, type: 3}
   m_PrefabInstance: {fileID: 1599886653}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1627566678
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1627566680}
+  - component: {fileID: 1627566679}
+  m_Layer: 0
+  m_Name: GridAppleSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1627566679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1627566678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8eeb26b88946649f2a844a368d25500f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  applePrefab: {fileID: 5441553946450191219, guid: 0fa7b5d2aa7b44cbb9c718c274f1fbe6, type: 3}
+  range: 1
+  spacing: 0.25
+  startCoundown: 5
+  healthyMaterial: {fileID: 2100000, guid: eed3d7c4506c647f99215e47d9d52f5e, type: 2}
+  rottenMaterial: {fileID: 2100000, guid: 430855f0f86e74b1cbd739262ebde1d9, type: 2}
+  rottenChance: 0.3
+  positions:
+  - grid: {x: -1, y: -1, z: -1}
+    world: {x: -0.25, y: -0.25, z: -0.25}
+  - grid: {x: -1, y: -1, z: 0}
+    world: {x: -0.25, y: -0.25, z: 0}
+  - grid: {x: -1, y: -1, z: 1}
+    world: {x: -0.25, y: -0.25, z: 0.25}
+  - grid: {x: -1, y: 0, z: -1}
+    world: {x: -0.25, y: 0, z: -0.25}
+  - grid: {x: -1, y: 0, z: 0}
+    world: {x: -0.25, y: 0, z: 0}
+  - grid: {x: -1, y: 0, z: 1}
+    world: {x: -0.25, y: 0, z: 0.25}
+  - grid: {x: -1, y: 1, z: -1}
+    world: {x: -0.25, y: 0.25, z: -0.25}
+  - grid: {x: -1, y: 1, z: 0}
+    world: {x: -0.25, y: 0.25, z: 0}
+  - grid: {x: -1, y: 1, z: 1}
+    world: {x: -0.25, y: 0.25, z: 0.25}
+  - grid: {x: 0, y: -1, z: -1}
+    world: {x: 0, y: -0.25, z: -0.25}
+  - grid: {x: 0, y: -1, z: 0}
+    world: {x: 0, y: -0.25, z: 0}
+  - grid: {x: 0, y: -1, z: 1}
+    world: {x: 0, y: -0.25, z: 0.25}
+  - grid: {x: 0, y: 0, z: -1}
+    world: {x: 0, y: 0, z: -0.25}
+  - grid: {x: 0, y: 0, z: 0}
+    world: {x: 0, y: 0, z: 0}
+  - grid: {x: 0, y: 0, z: 1}
+    world: {x: 0, y: 0, z: 0.25}
+  - grid: {x: 0, y: 1, z: -1}
+    world: {x: 0, y: 0.25, z: -0.25}
+  - grid: {x: 0, y: 1, z: 0}
+    world: {x: 0, y: 0.25, z: 0}
+  - grid: {x: 0, y: 1, z: 1}
+    world: {x: 0, y: 0.25, z: 0.25}
+  - grid: {x: 1, y: -1, z: -1}
+    world: {x: 0.25, y: -0.25, z: -0.25}
+  - grid: {x: 1, y: -1, z: 0}
+    world: {x: 0.25, y: -0.25, z: 0}
+  - grid: {x: 1, y: -1, z: 1}
+    world: {x: 0.25, y: -0.25, z: 0.25}
+  - grid: {x: 1, y: 0, z: -1}
+    world: {x: 0.25, y: 0, z: -0.25}
+  - grid: {x: 1, y: 0, z: 0}
+    world: {x: 0.25, y: 0, z: 0}
+  - grid: {x: 1, y: 0, z: 1}
+    world: {x: 0.25, y: 0, z: 0.25}
+  - grid: {x: 1, y: 1, z: -1}
+    world: {x: 0.25, y: 0.25, z: -0.25}
+  - grid: {x: 1, y: 1, z: 0}
+    world: {x: 0.25, y: 0.25, z: 0}
+  - grid: {x: 1, y: 1, z: 1}
+    world: {x: 0.25, y: 0.25, z: 0.25}
+--- !u!4 &1627566680
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1627566678}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.25, y: 0.25, z: -0.25}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1627676634
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12265,7 +12266,7 @@ Transform:
   m_GameObject: {fileID: 919132148735983001}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.3, y: 0.736, z: 0.506}
+  m_LocalPosition: {x: -0.3, y: 0.584, z: 0.506}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -19597,4 +19598,4 @@ SceneRoots:
   - {fileID: 543450652944951075}
   - {fileID: 1042927090}
   - {fileID: 1033501134}
-  - {fileID: 1070629305}
+  - {fileID: 1627566680}
