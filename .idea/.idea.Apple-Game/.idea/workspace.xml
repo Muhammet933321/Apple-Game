@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5e7b911b-a52d-416b-b9c1-82a72ae53068" name="Changes" comment="" />
+    <list default="true" id="5e7b911b-a52d-416b-b9c1-82a72ae53068" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ShaderGraphSettings.asset" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -90,7 +92,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1747120531918</updated>
-      <workItem from="1747120535586" duration="4411000" />
+      <workItem from="1747120535586" duration="5960000" />
     </task>
     <servers />
   </component>
