@@ -67,9 +67,10 @@ public class GridAppleSpawner : MonoBehaviour
 
     public void OnStartButton()
     {
-        transform.position = Camera.main.transform.position+new Vector3(0,0,0.5f); // Adjust to headset position
-        healthyBasket.transform.position = Camera.main.transform.position+new Vector3(0.3f,-0.5f,0.5f);
-        rottenBasket.transform.position = Camera.main.transform.position+new Vector3(-0.3f,-0.5f,0.5f);
+        Camera.main.transform.position = new Vector3(0, 0, 0);
+        transform.position = Camera.main.transform.position+new Vector3(0,1.36f,0.5f); // Adjust to headset position
+        //healthyBasket.transform.position = Camera.main.transform.position+new Vector3(0.3f,-0.5f,0.5f);
+        //rottenBasket.transform.position = Camera.main.transform.position+new Vector3(-0.3f,-0.5f,0.5f);
         SpawnRandomApple();
     }
 
