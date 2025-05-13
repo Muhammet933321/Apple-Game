@@ -147,6 +147,12 @@ public class GridAppleSpawner : MonoBehaviour
         lastPickSeconds = Time.time - spawnTimestamp;
         lastPickGrid    = currentGrid;
         Debug.Log($"Apple picked in {lastPickSeconds:F2}s at {lastPickGrid}");
+        
+        // todo: don't use find
+        FirestoreAppointmentManager mgr = FindAnyObjectByType<FirestoreAppointmentManager>();
+        if (mgr != null)
+            mgr.SavePickAnalytics(currentGrid, lastPickSeconds);
+
 
         /* ─── spawn replacement ─── */
         SpawnRandomApple();

@@ -399,6 +399,43 @@ private IEnumerator CheckForCurrentLevelChange()
 
         await docRef.UpdateAsync(update);
     }
+    
+    /// <summary>
+    /// Saves ONE apple-pick sample {seconds, grid} under
+    /// appointments/{firstAcceptedAppointmentId}/pickStats/(autoId)
+    /// </summary>
+    public async void SavePickAnalytics(Vector3Int grid, float seconds)
+    {
+        if (string.IsNullOrEmpty(firstAcceptedAppointmentId))
+            return;                                 // no appointment yet
+
+        try
+        {
+            DocumentReference docRef = db.Collection("appointments")
+                .Document(firstAcceptedAppointmentId)
+                .Collection("pickStats")
+                .Document();          // auto-ID
+
+            Dictionary<string, object> entry = new()
+            {
+                { "seconds",  seconds },
+                { "grid",     new Dictionary<string, object>
+                {
+                    { "x", grid.x },
+                    { "y", grid.y },
+                    { "z", grid.z }
+                }},
+                { "createdAt", Timestamp.GetCurrentTimestamp() }
+            };
+
+            await docRef.SetAsync(entry);
+            Debug.Log($"📈 Pick stat saved — {seconds:F2}s @ {grid}");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("❌ Failed to save pick analytics: " + ex.Message);
+        }
+    }
       
     
 }

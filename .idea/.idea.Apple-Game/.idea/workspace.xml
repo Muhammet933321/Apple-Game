@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5e7b911b-a52d-416b-b9c1-82a72ae53068" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game 1.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game 1.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/Basket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/Basket.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/FirestoreExample.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/FirestoreExample.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/GrabDurationChecker.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/GrabDurationChecker.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/GridAppleSpawner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/GridAppleSpawner.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/XR/Settings/OpenXR Package Settings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/XR/Settings/OpenXR Package Settings.asset" afterDir="false" />
-    </list>
+    <list default="true" id="5e7b911b-a52d-416b-b9c1-82a72ae53068" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -98,7 +90,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1747120531918</updated>
-      <workItem from="1747120535586" duration="3793000" />
+      <workItem from="1747120535586" duration="4411000" />
     </task>
     <servers />
   </component>
