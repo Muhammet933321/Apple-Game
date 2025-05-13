@@ -143,6 +143,8 @@ PlayerSettings:
   bundleVersion: 0.1.1
   preloadedAssets:
   - {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - {fileID: -1940607872937270036, guid: 76e4602bbb6c147598cc1866aeb95fb0, type: 2}
+  - {fileID: 7350053391976390441, guid: a87e8b6344e984b02aaa5b2d0664791e, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -855,8 +857,8 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Apple Game
-  metroPackageVersion: 
+  metroPackageName: AppleGame
+  metroPackageVersion: 1.0.0.0
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
@@ -864,7 +866,7 @@ PlayerSettings:
   metroCertificateNotAfter: 0000000000000000
   metroApplicationDescription: Apple Game
   wsaImages: {}
-  metroTileShortName: 
+  metroTileShortName: Apple Game 2
   metroTileShowName: 0
   metroMediumTileShowName: 0
   metroLargeTileShowName: 0
