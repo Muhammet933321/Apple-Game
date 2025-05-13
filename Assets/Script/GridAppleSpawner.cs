@@ -33,6 +33,8 @@ public class GridAppleSpawner : MonoBehaviour
     [Range(0f, 1f)]
     public float rottenChance = 0.3f;       // 30 % rotten by default
 
+    public GameObject healthyBasket;
+    public GameObject rottenBasket;
     /* ─────────── Runtime data ─────────── */
 
     public List<GridPosition> positions = new();   // all legal cells
@@ -59,8 +61,16 @@ public class GridAppleSpawner : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(Countdown());
-        StartCoroutine(AdjustHeadset());
+        //StartCoroutine(Countdown());
+        //StartCoroutine(AdjustHeadset());
+    }
+
+    public void OnStartButton()
+    {
+        transform.position = Camera.main.transform.position+new Vector3(0,0,0.5f); // Adjust to headset position
+        healthyBasket.transform.position = Camera.main.transform.position+new Vector3(0.3f,-0.5f,0.5f);
+        rottenBasket.transform.position = Camera.main.transform.position+new Vector3(-0.3f,-0.5f,0.5f);
+        SpawnRandomApple();
     }
 
     IEnumerator Countdown()
