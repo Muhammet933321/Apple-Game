@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using DG.Tweening;
+using Unity.XR.CoreUtils;
 
 [Serializable]
 public struct GridPosition
@@ -32,6 +33,9 @@ public class GridAppleSpawner : MonoBehaviour
     public Material rottenMaterial;
     [Range(0f, 1f)]
     public float rottenChance = 0.3f;       // 30 % rotten by default
+    
+    [SerializeField] private XROrigin xrOrigin;
+
 
     public GameObject healthyBasket;
     public GameObject rottenBasket;
@@ -67,8 +71,10 @@ public class GridAppleSpawner : MonoBehaviour
 
     public void OnStartButton()
     {
-        Camera.main.transform.position = new Vector3(0, 0, 0);
-        transform.position = Camera.main.transform.position+new Vector3(0,1.36f,0.5f); // Adjust to headset position
+        xrOrigin.MoveCameraToWorldLocation(new Vector3(0,1.36f,0f));
+        float currentYaw = xrOrigin.Camera.transform.eulerAngles.y;
+        xrOrigin.RotateAroundCameraUsingOriginUp(-currentYaw);
+        transform.position = Camera.main.transform.position+new Vector3(0,0,0.5f); // Adjust to headset position
         //healthyBasket.transform.position = Camera.main.transform.position+new Vector3(0.3f,-0.5f,0.5f);
         //rottenBasket.transform.position = Camera.main.transform.position+new Vector3(-0.3f,-0.5f,0.5f);
         SpawnRandomApple();
