@@ -6,6 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="5e7b911b-a52d-416b-b9c1-82a72ae53068" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Apple-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Apple-Game/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Apple.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Apple.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Material/Rotten.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Material/Rotten.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Material/Rotten.mat.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Material/Rotten.mat.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game 1.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game 1.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Script/Apple.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/Apple.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Script/GridAppleSpawner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/GridAppleSpawner.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -96,6 +101,7 @@
       <option name="presentableId" value="Default" />
       <updated>1747120531918</updated>
       <workItem from="1747120535586" duration="5960000" />
+      <workItem from="1747845923615" duration="4494000" />
     </task>
     <servers />
   </component>

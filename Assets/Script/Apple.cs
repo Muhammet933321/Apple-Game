@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class Apple : MonoBehaviour
 {
@@ -7,15 +9,48 @@ public class Apple : MonoBehaviour
     private AppleSpawner _appleSpawner = null;
     public AppleType appleType;
     public GameObject appleAnim;
-    
+
     private float minTouch = 3f;
     private float touchStarted = 0f;
-    
+
     private bool isAnimPlaying = false;
+    public bool isGrabbed { get; private set; } = false;
+
+    private XRGrabInteractable grabInteractable;
+
+    private GridAppleSpawner parentSpawner;
 
     private void Start()
     {
-        _appleSpawner = FindAnyObjectByType<AppleSpawner>();
+        parentSpawner = transform.parent.GetComponent<GridAppleSpawner>();
+        grabInteractable = GetComponent<XRGrabInteractable>();
+
+        // Subscribe to XR Interaction events
+        grabInteractable.selectEntered.AddListener(OnGrabbed);
+        grabInteractable.selectExited.AddListener(OnReleased);
+    }
+
+    private void OnDestroy()
+    {
+        // Clean up the event listeners to avoid memory leaks
+        if (grabInteractable != null)
+        {
+            grabInteractable.selectEntered.RemoveListener(OnGrabbed);
+            grabInteractable.selectExited.RemoveListener(OnReleased);
+        }
+    }
+
+    private void OnGrabbed(SelectEnterEventArgs args)
+    {
+        parentSpawner.grabEffect.FireEffect(transform.position);
+        parentSpawner.OnGrabbed();
+        isGrabbed = true;
+    }
+
+    private void OnReleased(SelectExitEventArgs args)
+    {
+        parentSpawner.OnReleased();
+        isGrabbed = false;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -26,19 +61,15 @@ public class Apple : MonoBehaviour
             touchStarted = Time.time;
         }
     }
-    
+
     private void OnTriggerExit(Collider other)
     {
         isAnimPlaying = false;
-        if (other.CompareTag("Controller"))
-        {
-                
-        }
     }
 
     public void HeldEnough()
     {
-        if(_appleSpawner.spawnLevel == AppleSpawner.SpawnLevel.Level6)
+        if (_appleSpawner.spawnLevel == AppleSpawner.SpawnLevel.Level6)
             _appleSpawner.InteractApple(gameObject);
     }
 
@@ -53,10 +84,10 @@ public class Apple : MonoBehaviour
             appleAnim.SetActive(false);
         }
     }
-    
+
     public void Pick()
     {
-        Picked?.Invoke(this);   // fire the event
-        Destroy(gameObject);    // remove the old apple
+        Picked?.Invoke(this);
+        Destroy(gameObject);
     }
 }

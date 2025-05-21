@@ -25,8 +25,8 @@ public class GridAppleSpawner : MonoBehaviour
 
     [Header("Prefab & Grid Settings")]
     public GameObject applePrefab;
-    public int   range   = 3;     // → cells from –3 to +3
-    public float spacing = 100f;  // → –300 … +300 world units
+    public int   range;
+    public float spacing;
     public int startCoundown;
     [Header("Materials & Spawn Odds")]
     public Material healthyMaterial;
@@ -36,9 +36,11 @@ public class GridAppleSpawner : MonoBehaviour
     
     [SerializeField] private XROrigin xrOrigin;
 
-
+    public Vector3 healthyBasketOffset;
+    public Vector3 rottenBasketOffset;
     public GameObject healthyBasket;
     public GameObject rottenBasket;
+    public GrabEffect grabEffect;
     /* ─────────── Runtime data ─────────── */
 
     public List<GridPosition> positions = new();   // all legal cells
@@ -47,7 +49,7 @@ public class GridAppleSpawner : MonoBehaviour
     private Vector3Int  currentGrid;               // grid of the active apple
     private float       spawnTimestamp;            // Time.time when it appeared
     private readonly System.Random rng = new();    // deterministic tests → seed
-
+    public float basketMoveDuration = 0.5f;
     /* ─────────── Analytics — **requested** ─────────── */
 
     public float      lastPickSeconds { get; private set; } = -1f;
@@ -74,25 +76,43 @@ public class GridAppleSpawner : MonoBehaviour
         xrOrigin.MoveCameraToWorldLocation(new Vector3(0,1.36f,0f));
         float currentYaw = xrOrigin.Camera.transform.eulerAngles.y;
         xrOrigin.RotateAroundCameraUsingOriginUp(-currentYaw);
-        transform.position = Camera.main.transform.position+new Vector3(0,0,0.5f); // Adjust to headset position
+        transform.position = Camera.main.transform.position+new Vector3(0.2f,0,0.5f); // Adjust to headset position
         //healthyBasket.transform.position = Camera.main.transform.position+new Vector3(0.3f,-0.5f,0.5f);
         //rottenBasket.transform.position = Camera.main.transform.position+new Vector3(-0.3f,-0.5f,0.5f);
-        SpawnRandomApple();
+        SpawnAllApples();
     }
 
-    IEnumerator Countdown()
+    public void OnGrabbed()
     {
-        yield return new WaitForSeconds(startCoundown);
-        SpawnRandomApple();
+        Vector3 basePos = Camera.main.transform.position;
+
+        Vector3 healthyTarget = basePos + healthyBasketOffset;
+        Vector3 rottenTarget  = basePos + rottenBasketOffset;
+
+        // Start at ground level
+        healthyBasket.transform.position = new Vector3(healthyTarget.x, 0f, healthyTarget.z);
+        rottenBasket.transform.position  = new Vector3(rottenTarget.x, 0f, rottenTarget.z);
+
+        healthyBasket.SetActive(true);
+        rottenBasket.SetActive(true);
+
+        // Animate upward
+        healthyBasket.transform.DOMoveY(healthyTarget.y, basketMoveDuration);
+        rottenBasket.transform.DOMoveY(rottenTarget.y, basketMoveDuration);
     }
-    
-    IEnumerator AdjustHeadset()
+
+    public void OnReleased()
     {
-        while (true)
+        // Animate downward to y = 0
+        healthyBasket.transform.DOMoveY(0f, basketMoveDuration).OnComplete(() =>
         {
-            yield return new WaitForSeconds(5);
-            transform.position = Camera.main.transform.position+new Vector3(0,0,0.5f); // Adjust to headset position 
-        }
+            healthyBasket.SetActive(false);
+        });
+
+        rottenBasket.transform.DOMoveY(0f, basketMoveDuration).OnComplete(() =>
+        {
+            rottenBasket.SetActive(false);
+        });
     }
 
     /* ─────────── Grid generation ─────────── */
@@ -134,7 +154,7 @@ public class GridAppleSpawner : MonoBehaviour
             transform);
         
         currentApple.transform.localScale = Vector3.zero;
-        currentApple.transform.DOScale(new Vector3(0.1f, 0.1f, 0.1f), 0.5f);
+        currentApple.transform.DOScale(new Vector3(0.05f, 0.05f, 0.05f), 0.5f);
 
         /* 3 — stamp birth-time for analytics */
         spawnTimestamp = Time.time;
@@ -174,4 +194,43 @@ public class GridAppleSpawner : MonoBehaviour
         /* ─── spawn replacement ─── */
         SpawnRandomApple();
     }
+    
+    public void SpawnAllApples()
+    {
+        if (applePrefab == null || healthyMaterial == null || rottenMaterial == null)
+        {
+            Debug.LogError($"{name}: Prefab or materials not assigned!", this);
+            return;
+        }
+
+        foreach (var pos in positions)
+        {
+            GameObject apple = Instantiate(
+                applePrefab,
+                transform.position + pos.world,
+                Quaternion.identity,
+                transform);
+
+            apple.transform.localScale = Vector3.zero;
+            apple.transform.DOScale(new Vector3(0.05f, 0.05f, 0.05f), 0.5f);
+
+            bool makeRotten = rng.NextDouble() < rottenChance;
+            var appleScript = apple.GetComponent<Apple>();
+            var renderer = apple.transform.GetChild(0).GetComponent<Renderer>();
+
+            if (makeRotten)
+            {
+                appleScript.appleType = AppleType.Rotten;
+                renderer.material = rottenMaterial;
+            }
+            else
+            {
+                appleScript.appleType = AppleType.Healthy;
+                renderer.material = healthyMaterial;
+            }
+        }
+
+        Debug.Log($"Spawned {positions.Count} apples.");
+    }
+
 }
