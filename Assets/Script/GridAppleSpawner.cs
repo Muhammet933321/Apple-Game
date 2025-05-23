@@ -80,6 +80,7 @@ public class GridAppleSpawner : MonoBehaviour
         //healthyBasket.transform.position = Camera.main.transform.position+new Vector3(0.3f,-0.5f,0.5f);
         //rottenBasket.transform.position = Camera.main.transform.position+new Vector3(-0.3f,-0.5f,0.5f);
         SpawnAllApples();
+        //SpawnRandomApple();
     }
 
     public void OnGrabbed()
