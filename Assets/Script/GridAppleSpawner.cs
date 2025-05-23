@@ -54,22 +54,19 @@ public class GridAppleSpawner : MonoBehaviour
 
     public float      lastPickSeconds { get; private set; } = -1f;
     public Vector3Int lastPickGrid    { get; private set; }
+    
+    [Header("Arc Settings")]
+    [Range(-180f, 180f)]
+    public float arcRotation = 0f; // Rotation offset in degrees
+
 
     /* ─────────── Unity lifecycle ─────────── */
-
-    private void OnValidate()  => GeneratePositions();
+    
     private void Awake()
     {
-        GeneratePositions();
         Apple.Picked += HandleApplePicked;
     }
     private void OnDestroy()   => Apple.Picked -= HandleApplePicked;
-
-    private void Start()
-    {
-        //StartCoroutine(Countdown());
-        //StartCoroutine(AdjustHeadset());
-    }
 
     public void OnStartButton()
     {
@@ -79,6 +76,7 @@ public class GridAppleSpawner : MonoBehaviour
         transform.position = Camera.main.transform.position+new Vector3(0.2f,0,0.5f); // Adjust to headset position
         //healthyBasket.transform.position = Camera.main.transform.position+new Vector3(0.3f,-0.5f,0.5f);
         //rottenBasket.transform.position = Camera.main.transform.position+new Vector3(-0.3f,-0.5f,0.5f);
+        GeneratePositions();
         SpawnAllApples();
         //SpawnRandomApple();
     }
@@ -122,15 +120,55 @@ public class GridAppleSpawner : MonoBehaviour
     {
         positions.Clear();
 
-        for (int x = -range; x <= range; x++)
-        for (int y = -range; y <= range; y++)
-        for (int z = -range; z <= range; z++)
+        int layerCount       = 3;
+        int horizontalCount  = 8;   // left-right resolution
+        int verticalCount    = 4;    // up-down resolution
+        float radiusStart    = 0.2f;
+        float radiusStep     = 0.2f;
+        float horizontalSpan = 120f; // in degrees
+        float verticalSpan   = 60f;  // in degrees
+
+        Transform cam = Camera.main.transform;
+        Vector3 offset = new Vector3(0.2f, -0.2f, 0.2f);
+        Vector3 arcCenter = cam.position + offset; 
+
+        Vector3 baseForward = Quaternion.Euler(0f, arcRotation, 0f) * cam.forward;
+        Vector3 baseRight = Quaternion.AngleAxis(90f, Vector3.up) * baseForward;
+
+        for (int layer = 0; layer < layerCount; layer++)
         {
-            Vector3Int grid  = new(x, y, z);
-            Vector3    world = new(x * spacing, y * spacing, z * spacing);
-            positions.Add(new GridPosition(grid, world));
+            float radius = radiusStart + layer * radiusStep;
+
+            for (int y = 0; y < verticalCount; y++)
+            {
+                float vStep = verticalSpan / (verticalCount - 1);
+                float vAngle = -verticalSpan / 2f + y * vStep;
+
+                for (int x = 0; x < horizontalCount; x++)
+                {
+                    float hStep = horizontalSpan / (horizontalCount - 1);
+                    float hAngle = -horizontalSpan / 2f + x * hStep;
+
+                    Quaternion rotH = Quaternion.AngleAxis(hAngle, Vector3.up);
+                    Quaternion rotV = Quaternion.AngleAxis(vAngle, baseRight);
+
+                    Vector3 direction = rotV * rotH * baseForward;
+
+                    Vector3 pos = arcCenter + direction.normalized * radius;
+                    positions.Add(new GridPosition(Vector3Int.zero, pos));
+                }
+            }
         }
+
+        Debug.Log($"✅ Spawned {positions.Count} apples in {layerCount} spherical shell layers.");
     }
+
+
+
+
+
+
+
 
     /* ─────────── Spawning & picking ─────────── */
 
@@ -208,12 +246,12 @@ public class GridAppleSpawner : MonoBehaviour
         {
             GameObject apple = Instantiate(
                 applePrefab,
-                transform.position + pos.world,
+                pos.world,  // Remove transform.position offset
                 Quaternion.identity,
                 transform);
 
             apple.transform.localScale = Vector3.zero;
-            apple.transform.DOScale(new Vector3(0.05f, 0.05f, 0.05f), 0.5f);
+            apple.transform.DOScale(new Vector3(0.02f, 0.02f, 0.02f), 0.5f);
 
             bool makeRotten = rng.NextDouble() < rottenChance;
             var appleScript = apple.GetComponent<Apple>();
@@ -231,7 +269,7 @@ public class GridAppleSpawner : MonoBehaviour
             }
         }
 
-        Debug.Log($"Spawned {positions.Count} apples.");
+        Debug.Log($"Spawned {positions.Count} apples in arc.");
     }
 
 }
