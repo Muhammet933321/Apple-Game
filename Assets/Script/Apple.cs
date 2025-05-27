@@ -5,9 +5,11 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class Apple : MonoBehaviour
 {
-    public static event Action<Apple> Picked;
+    public static event Action<Apple> PickedCorrectBasket;
+    public static event Action<Apple> PickedWrongBasket;
     public AppleType appleType;
     public bool isGrabbed { get; private set; } = false;
+    public bool isReleased { get; private set; } = false;
 
     private XRGrabInteractable grabInteractable;
 
@@ -42,13 +44,23 @@ public class Apple : MonoBehaviour
 
     private void OnReleased(SelectExitEventArgs args)
     {
-        parentSpawner.OnReleased();
+        Debug.Log("Hey");
+        if (isReleased) return;
+        if (grabInteractable != null)
+        {
+            grabInteractable.selectEntered.RemoveListener(OnGrabbed);
+            grabInteractable.selectExited.RemoveListener(OnReleased);
+        }
+        GetComponent<Rigidbody>().isKinematic = false;
+        GetComponent<Rigidbody>().useGravity = true;
+        parentSpawner.OnReleased(transform.position, this);
         isGrabbed = false;
+        isReleased = true;
     }
     
-    public void Pick()
+    public void Pick(bool isCorrectBasket)
     {
-        Picked?.Invoke(this);
-        Destroy(gameObject);
+        if (isCorrectBasket) PickedCorrectBasket?.Invoke(this); else PickedWrongBasket?.Invoke(this);
+        Destroy(GetComponent<Apple>());
     }
 }

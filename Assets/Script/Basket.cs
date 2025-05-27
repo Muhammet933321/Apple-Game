@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -10,22 +11,21 @@ public enum AppleType
 public class Basket : MonoBehaviour
 {
     public AppleType basketType;
-    private AppleSpawner _appleSpawner = null;
-    
-    private void Start()
+
+    private void OnTriggerStay(Collider other)
     {
-        _appleSpawner = FindAnyObjectByType<AppleSpawner>();
-    }
-    
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.GetComponent<Apple>().appleType == basketType)
+        /*
+        if (other != null && other.gameObject != null)
         {
-            other.GetComponent<XRGrabInteractable>().enabled = false;
-            other.transform.DOScale(Vector3.zero, 0.5f);
-            other.transform.DOMove(transform.position, 0.5f).OnComplete(()=>other.GetComponent<Apple>().Pick());
-            
-        }
-           
+            Apple apple = other.gameObject.GetComponent<Apple>();
+            if (apple.isReleased)
+            {
+                Debug.Log(other.gameObject.name);
+                bool isCorrectBasket = other.GetComponent<Apple>().appleType == basketType;
+                other.GetComponent<XRGrabInteractable>().enabled = false;
+                other.GetComponent<Apple>().Pick(isCorrectBasket);
+                
+            }
+        }*/
     }
 }

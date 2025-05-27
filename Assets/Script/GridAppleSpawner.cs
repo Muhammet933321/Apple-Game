@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using DG.Tweening;
+using TMPro;
 using Unity.XR.CoreUtils;
+using UnityEngine.Serialization;
 
 [Serializable]
 public struct GridPosition
@@ -58,15 +60,26 @@ public class GridAppleSpawner : MonoBehaviour
     [Header("Arc Settings")]
     [Range(-180f, 180f)]
     public float arcRotation = 0f; // Rotation offset in degrees
-
+    public TextMeshProUGUI basketText;
 
     /* ─────────── Unity lifecycle ─────────── */
     
     private void Awake()
     {
-        Apple.Picked += HandleApplePicked;
+        Apple.PickedCorrectBasket += HandleApplePicked;
+        Apple.PickedWrongBasket += HandleApplePicked;
+        
+        Apple.PickedCorrectBasket += CorrectBasket;
+        Apple.PickedWrongBasket += WrongBasket;
     }
-    private void OnDestroy()   => Apple.Picked -= HandleApplePicked;
+    private void OnDestroy()
+    { 
+        Apple.PickedCorrectBasket -= HandleApplePicked;
+        Apple.PickedWrongBasket -= HandleApplePicked;
+        
+        Apple.PickedCorrectBasket -= CorrectBasket;
+        Apple.PickedWrongBasket -= WrongBasket;
+    }
 
     public void OnStartButton()
     {
@@ -83,7 +96,7 @@ public class GridAppleSpawner : MonoBehaviour
 
     public void OnGrabbed()
     {
-        Vector3 basePos = Camera.main.transform.position;
+       Vector3 basePos = Camera.main.transform.position;
 
         Vector3 healthyTarget = basePos + healthyBasketOffset;
         Vector3 rottenTarget  = basePos + rottenBasketOffset;
@@ -100,19 +113,38 @@ public class GridAppleSpawner : MonoBehaviour
         rottenBasket.transform.DOMoveY(rottenTarget.y, basketMoveDuration);
     }
 
-    public void OnReleased()
+    public void OnReleased(Vector3 appleReleasePosition, Apple apple)
     {
-        // Animate downward to y = 0
-        healthyBasket.transform.DOMoveY(0f, basketMoveDuration).OnComplete(() =>
+        Bounds healthyZone = new Bounds(
+            healthyBasket.transform.position + Vector3.up * 0.5f, 
+            Vector3.one);
+        Bounds rottenZone = new Bounds(
+            rottenBasket.transform.position + Vector3.up * 0.5f, 
+            Vector3.one);
+        
+        if (apple == null)
         {
-            healthyBasket.SetActive(false);
-        });
+            Debug.LogWarning("No current apple found.");
+            return;
+        }
 
-        rottenBasket.transform.DOMoveY(0f, basketMoveDuration).OnComplete(() =>
+        bool releasedInHealthyZone = healthyZone.Contains(appleReleasePosition);
+        bool releasedInRottenZone  = rottenZone.Contains(appleReleasePosition);
+
+        if (releasedInHealthyZone || releasedInRottenZone)
         {
-            rottenBasket.SetActive(false);
-        });
+            bool isCorrectBasket = (releasedInHealthyZone && apple.appleType == AppleType.Healthy)
+                                   || (releasedInRottenZone  && apple.appleType == AppleType.Rotten);
+
+            apple.Pick(isCorrectBasket);  // 💥 One clean call
+        }
+        else
+        {
+            Debug.Log("Apple was released outside any basket.");
+            // Optional: Add logic to return apple or let it fall
+        }
     }
+
 
     /* ─────────── Grid generation ─────────── */
 
@@ -123,13 +155,13 @@ public class GridAppleSpawner : MonoBehaviour
         int layerCount       = 3;
         int horizontalCount  = 8;   // left-right resolution
         int verticalCount    = 4;    // up-down resolution
-        float radiusStart    = 0.2f;
+        float radiusStart    = 0.4f;
         float radiusStep     = 0.2f;
-        float horizontalSpan = 120f; // in degrees
-        float verticalSpan   = 60f;  // in degrees
+        float horizontalSpan = 90f; // in degrees
+        float verticalSpan   = 40f;  // in degrees
 
         Transform cam = Camera.main.transform;
-        Vector3 offset = new Vector3(0.2f, -0.2f, 0.2f);
+        Vector3 offset = new Vector3(0.2f, 0f, -0.2f);
         Vector3 arcCenter = cam.position + offset; 
 
         Vector3 baseForward = Quaternion.Euler(0f, arcRotation, 0f) * cam.forward;
@@ -193,7 +225,7 @@ public class GridAppleSpawner : MonoBehaviour
             transform);
         
         currentApple.transform.localScale = Vector3.zero;
-        currentApple.transform.DOScale(new Vector3(0.05f, 0.05f, 0.05f), 0.5f);
+        currentApple.transform.DOScale(new Vector3(0.04f, 0.04f, 0.04f), 0.5f);
 
         /* 3 — stamp birth-time for analytics */
         spawnTimestamp = Time.time;
@@ -215,8 +247,19 @@ public class GridAppleSpawner : MonoBehaviour
         }
     }
 
+    private void CorrectBasket(Apple picked)
+    {
+        basketText.text = "Dogru";
+    }
+    
+    private void WrongBasket(Apple picked)
+    {
+        basketText.text = "Yanlis";
+    }
+    
     private void HandleApplePicked(Apple picked)
     {
+        Debug.Log("Apple picked!");
         if (picked.gameObject != currentApple) return;
 
         /* ─── analytics ─── */
@@ -251,7 +294,7 @@ public class GridAppleSpawner : MonoBehaviour
                 transform);
 
             apple.transform.localScale = Vector3.zero;
-            apple.transform.DOScale(new Vector3(0.02f, 0.02f, 0.02f), 0.5f);
+            apple.transform.DOScale(new Vector3(0.04f, 0.04f, 0.04f), 0.5f);
 
             bool makeRotten = rng.NextDouble() < rottenChance;
             var appleScript = apple.GetComponent<Apple>();
