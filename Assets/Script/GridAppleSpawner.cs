@@ -74,7 +74,11 @@ public class GridAppleSpawner : MonoBehaviour
     public TextMeshProUGUI basketText;
 
     /* ─────────── Unity lifecycle ─────────── */
-    
+    private void Start()
+    {
+        OnStartButton();
+    }
+
     private void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
@@ -163,7 +167,7 @@ public void OnReleased(Vector3 appleReleasePosition, Apple apple)
 
     if (releasedInHealthyZone || releasedInRottenZone)
     {
-        Debug.Log("Released");
+        Debug.Log("Released IN ZONE");
         bool isCorrectBasket = (releasedInHealthyZone && apple.appleType == AppleType.Healthy)
                                || (releasedInRottenZone  && apple.appleType == AppleType.Rotten);
 
@@ -190,6 +194,7 @@ public void OnReleased(Vector3 appleReleasePosition, Apple apple)
     {
         Debug.Log("Apple was released outside any basket.");
         apple.Pick(false);
+        Destroy(apple.gameObject);
         // Optional: Let the apple fall naturally
     }
 }

@@ -8,7 +8,7 @@ using UnityEngine.XR.Interaction.Toolkit.Interactors;
 public class AppleGrabCondition : MonoBehaviour
 {
     [Header("Grabbing Settings")]
-    public float fingerProximityThreshold = 0.04f; // 4cm radius
+    private float fingerProximityThreshold = 0.1f; // 4cm radius
     public int requiredFingersToGrab = 4;
     
     private List<Transform> leftHandTips;
@@ -25,6 +25,7 @@ public class AppleGrabCondition : MonoBehaviour
     private GridAppleSpawner parentSpawner;
     private void Awake()
     {
+        interactionManager = FindAnyObjectByType<XRInteractionManager>();
         parentSpawner = transform.parent.GetComponent<GridAppleSpawner>();
         grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         grabInteractable.selectEntered.AddListener(OnGrabbed);

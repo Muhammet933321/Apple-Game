@@ -92,6 +92,7 @@ public class Apple : MonoBehaviour
     {
         if (isCorrectBasket) PickedCorrectBasket?.Invoke(this); else PickedWrongBasket?.Invoke(this);
         Destroy(GetComponent<Apple>());
+        Destroy(GetComponent<XRGrabInteractable>());
     }
     
 }
