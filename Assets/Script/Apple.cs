@@ -8,8 +8,11 @@ public class Apple : MonoBehaviour
     public static event Action<Apple> PickedCorrectBasket;
     public static event Action<Apple> PickedWrongBasket;
     public AppleType appleType;
+    public GridPosition position;
     public bool isGrabbed { get; private set; } = false;
-    public bool isReleased { get; private set; } = false;
+    public bool isReleased =false;
+    public bool isCalibrating =false;
+    public bool isCalibrationTouched = false;
 
     private XRGrabInteractable grabInteractable;
 
@@ -19,10 +22,18 @@ public class Apple : MonoBehaviour
     {
         parentSpawner = transform.parent.GetComponent<GridAppleSpawner>();
         grabInteractable = GetComponent<XRGrabInteractable>();
+        if (isCalibrating)
+        {
+            Destroy(GetComponent<AppleGrabCondition>());
+            Destroy(grabInteractable);
+        }
 
-        // Subscribe to XR Interaction events
-        grabInteractable.selectEntered.AddListener(OnGrabbed);
-        grabInteractable.selectExited.AddListener(OnReleased);
+        else
+        {
+            // Subscribe to XR Interaction events
+            grabInteractable.selectEntered.AddListener(OnGrabbed);
+            grabInteractable.selectExited.AddListener(OnReleased);
+        }
     }
 
     private void OnDestroy()
@@ -38,7 +49,6 @@ public class Apple : MonoBehaviour
     private void OnGrabbed(SelectEnterEventArgs args)
     {
         parentSpawner.grabEffect.FireEffect(transform.position);
-        parentSpawner.OnGrabbed();
         isGrabbed = true;
     }
 
@@ -51,16 +61,37 @@ public class Apple : MonoBehaviour
             grabInteractable.selectEntered.RemoveListener(OnGrabbed);
             grabInteractable.selectExited.RemoveListener(OnReleased);
         }
-        GetComponent<Rigidbody>().isKinematic = false;
-        GetComponent<Rigidbody>().useGravity = true;
+        //GetComponent<Rigidbody>().isKinematic = false;
+        //GetComponent<Rigidbody>().useGravity = true;
         parentSpawner.OnReleased(transform.position, this);
         isGrabbed = false;
         isReleased = true;
     }
-    
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (isCalibrationTouched || !isCalibrating) return;
+        isCalibrationTouched = true;
+        
+        Material material = parentSpawner.OnCalibrationTouched(position);
+        Renderer renderer = transform.GetChild(0).GetComponent<Renderer>();
+        if (renderer != null && material != null)
+        {
+            // Assign the same material to all slots
+            Material[] newMaterials = new Material[renderer.materials.Length];
+            for (int i = 0; i < newMaterials.Length; i++)
+            {
+                newMaterials[i] = material;
+            }
+            renderer.materials = newMaterials;
+        }
+    }
+
     public void Pick(bool isCorrectBasket)
     {
         if (isCorrectBasket) PickedCorrectBasket?.Invoke(this); else PickedWrongBasket?.Invoke(this);
         Destroy(GetComponent<Apple>());
+        Destroy(GetComponent<XRGrabInteractable>());
     }
+    
 }

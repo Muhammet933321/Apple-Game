@@ -6,12 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="5e7b911b-a52d-416b-b9c1-82a72ae53068" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Apple-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Apple-Game/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game 1.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game 1.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Start.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Start.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Script/Apple.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/Apple.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/Basket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/Basket.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Script/GridAppleSpawner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/GridAppleSpawner.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/XR/Settings/OpenXR Package Settings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/XR/Settings/OpenXR Package Settings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,8 +20,10 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ab57b1ec384340afb4b2976816b313e71b600/3d/a5100c87/Handedness.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.xr.core-utils@5b282bc7378d/Runtime/XRLoggingUtils.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.xr.core-utils@5b282bc7378d/Runtime/XROrigin.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.xr.hands@860f3562c229/Runtime/XRHandTrackingEvents.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.xr.interaction.toolkit@7e188ec401ea/Runtime/Interaction/Interactables/XRGrabInteractable.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
@@ -39,7 +39,7 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature-dump&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -106,6 +106,8 @@
       <workItem from="1748021042543" duration="2102000" />
       <workItem from="1748360852734" duration="3737000" />
       <workItem from="1748372786671" duration="1251000" />
+      <workItem from="1748611429296" duration="830000" />
+      <workItem from="1748621093869" duration="6554000" />
     </task>
     <servers />
   </component>

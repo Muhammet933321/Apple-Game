@@ -286,6 +286,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   appleType: 0
+  position:
+    grid: {x: 0, y: 0, z: 0}
+    world: {x: 0, y: 0, z: 0}
+  isReleased: 0
+  isCalibrating: 0
+  isCalibrationTouched: 0
 --- !u!135 &6342496999330521606
 SphereCollider:
   m_ObjectHideFlags: 0
