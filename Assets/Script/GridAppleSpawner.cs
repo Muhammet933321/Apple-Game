@@ -6,7 +6,9 @@ using UnityEngine;
 using DG.Tweening;
 using TMPro;
 using Unity.XR.CoreUtils;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 [Serializable]
 public struct GridPosition
@@ -23,6 +25,13 @@ public struct GridPosition
 
 public class GridAppleSpawner : MonoBehaviour
 {
+    [Header("Hand Joints")]
+    public List<Transform> leftHandTips = new();
+    public List<Transform> rightHandTips = new();
+    
+    public XRBaseInteractor leftHandInteractor;
+    public XRBaseInteractor rightHandInteractor;
+
     /* ─────────── Inspector fields ─────────── */
 
     [Header("Prefab & Grid Settings")]
@@ -33,10 +42,11 @@ public class GridAppleSpawner : MonoBehaviour
     [Header("Materials & Spawn Odds")]
     public Material healthyMaterial;
     public Material rottenMaterial;
+    public Material transparentMaterial;
     [Range(0f, 1f)]
     public float rottenChance = 0.3f;       // 30 % rotten by default
     
-    [SerializeField] private XROrigin xrOrigin;
+    public XROrigin xrOrigin;
 
     public Vector3 healthyBasketOffset;
     public Vector3 rottenBasketOffset;
@@ -46,6 +56,7 @@ public class GridAppleSpawner : MonoBehaviour
     /* ─────────── Runtime data ─────────── */
 
     public List<GridPosition> positions = new();   // all legal cells
+    public List<GridPosition> calibratedPositions = new();   // all legal cells
 
     private GameObject  currentApple;
     private Vector3Int  currentGrid;               // grid of the active apple
@@ -66,6 +77,8 @@ public class GridAppleSpawner : MonoBehaviour
     
     private void Awake()
     {
+        DontDestroyOnLoad(this.gameObject);
+        
         Apple.PickedCorrectBasket += HandleApplePicked;
         Apple.PickedWrongBasket += HandleApplePicked;
         
@@ -81,19 +94,36 @@ public class GridAppleSpawner : MonoBehaviour
         Apple.PickedWrongBasket -= WrongBasket;
     }
 
-    public void OnStartButton()
+    private void AdjustToHeadset()
     {
+        //xrOrigin = FindAnyObjectByType<XROrigin>();
         xrOrigin.MoveCameraToWorldLocation(new Vector3(0,1.36f,0f));
         float currentYaw = xrOrigin.Camera.transform.eulerAngles.y;
         xrOrigin.RotateAroundCameraUsingOriginUp(-currentYaw);
         transform.position = Camera.main.transform.position+new Vector3(0.2f,0,0.5f); // Adjust to headset position
+    }
+    public void OnStartButton()
+    {
+        AdjustToHeadset();
         //healthyBasket.transform.position = Camera.main.transform.position+new Vector3(0.3f,-0.5f,0.5f);
         //rottenBasket.transform.position = Camera.main.transform.position+new Vector3(-0.3f,-0.5f,0.5f);
         GeneratePositions();
         SpawnAllApples();
         //SpawnRandomApple();
+
+        StartCoroutine(CalibrationCountdown());
     }
 
+    IEnumerator CalibrationCountdown()
+    {
+        yield return new WaitForSecondsRealtime(10);
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+        //AdjustToHeadset();
+        SpawnRandomApple();
+    }
     public void OnGrabbed()
     {
        Vector3 basePos = Camera.main.transform.position;
@@ -113,37 +143,56 @@ public class GridAppleSpawner : MonoBehaviour
         rottenBasket.transform.DOMoveY(rottenTarget.y, basketMoveDuration);
     }
 
-    public void OnReleased(Vector3 appleReleasePosition, Apple apple)
+public void OnReleased(Vector3 appleReleasePosition, Apple apple)
+{
+    Bounds healthyZone = new Bounds(
+        healthyBasket.transform.position + Vector3.up * 1f, 
+        Vector3.one);
+    Bounds rottenZone = new Bounds(
+        rottenBasket.transform.position + Vector3.up * 1f, 
+        Vector3.one);
+
+    if (apple == null)
     {
-        Bounds healthyZone = new Bounds(
-            healthyBasket.transform.position + Vector3.up * 0.5f, 
-            Vector3.one);
-        Bounds rottenZone = new Bounds(
-            rottenBasket.transform.position + Vector3.up * 0.5f, 
-            Vector3.one);
-        
-        if (apple == null)
-        {
-            Debug.LogWarning("No current apple found.");
-            return;
-        }
-
-        bool releasedInHealthyZone = healthyZone.Contains(appleReleasePosition);
-        bool releasedInRottenZone  = rottenZone.Contains(appleReleasePosition);
-
-        if (releasedInHealthyZone || releasedInRottenZone)
-        {
-            bool isCorrectBasket = (releasedInHealthyZone && apple.appleType == AppleType.Healthy)
-                                   || (releasedInRottenZone  && apple.appleType == AppleType.Rotten);
-
-            apple.Pick(isCorrectBasket);  // 💥 One clean call
-        }
-        else
-        {
-            Debug.Log("Apple was released outside any basket.");
-            // Optional: Add logic to return apple or let it fall
-        }
+        Debug.LogWarning("No current apple found.");
+        return;
     }
+
+    bool releasedInHealthyZone = healthyZone.Contains(appleReleasePosition);
+    bool releasedInRottenZone  = rottenZone.Contains(appleReleasePosition);
+
+    if (releasedInHealthyZone || releasedInRottenZone)
+    {
+        Debug.Log("Released");
+        bool isCorrectBasket = (releasedInHealthyZone && apple.appleType == AppleType.Healthy)
+                               || (releasedInRottenZone  && apple.appleType == AppleType.Rotten);
+
+        // Basket transform reference
+        Transform targetBasket = releasedInHealthyZone ? healthyBasket.transform : rottenBasket.transform;
+
+        // Get random local offset inside a small cube (e.g. 0.2 units in each direction)
+        Vector3 randomLocalOffset = new Vector3(
+            UnityEngine.Random.Range(-0.1f, 0.1f),
+            UnityEngine.Random.Range( -0.05f, 0.1f),  // keep it slightly above the base
+            UnityEngine.Random.Range(-0.1f, 0.1f)
+        );
+
+        // Final target position inside the basket
+        Vector3 targetPosition = targetBasket.position + randomLocalOffset;
+
+        // Tween the apple to the target position
+        apple.transform.DOMove(targetPosition, 0.5f).SetEase(Ease.InOutSine).OnComplete(() =>
+        {
+            apple.Pick(isCorrectBasket);
+        });
+    }
+    else
+    {
+        Debug.Log("Apple was released outside any basket.");
+        apple.Pick(false);
+        // Optional: Let the apple fall naturally
+    }
+}
 
 
     /* ─────────── Grid generation ─────────── */
@@ -212,40 +261,51 @@ public class GridAppleSpawner : MonoBehaviour
             return;
         }
 
-        /* 1 — random cell */
-        int index = rng.Next(positions.Count);
-        currentGrid = positions[index].grid;
-        Vector3 spawnPos = positions[index].world;
+        if (calibratedPositions.Count == 0)
+        {
+            Debug.LogWarning("No calibrated positions available to spawn apple.");
+            return;
+        }
 
-        /* 2 — instantiate */
+        // 1 — Choose a random calibrated position
+        int index = rng.Next(calibratedPositions.Count);
+        GridPosition selected = calibratedPositions[index];
+        currentGrid = selected.grid;
+        Vector3 spawnPos = selected.world;
+
+        // 2 — Instantiate apple at that position (world-space)
         currentApple = Instantiate(
             applePrefab,
-            transform.position + spawnPos,
+            spawnPos,
             Quaternion.identity,
             transform);
-        
+
         currentApple.transform.localScale = Vector3.zero;
         currentApple.transform.DOScale(new Vector3(0.04f, 0.04f, 0.04f), 0.5f);
 
-        /* 3 — stamp birth-time for analytics */
+        // 3 — Record timestamp
         spawnTimestamp = Time.time;
 
-        /* 4 — choose type & material */
+        // 4 — Choose apple type & material
         bool makeRotten = rng.NextDouble() < rottenChance;
-        var apple       = currentApple.GetComponent<Apple>();
-        var renderer    = currentApple.transform.GetChild(0).GetComponent<Renderer>();
+        Apple apple = currentApple.GetComponent<Apple>();
+        Renderer renderer = currentApple.transform.GetChild(0).GetComponent<Renderer>();
+
+        apple.position = selected;
+        apple.isCalibrating = false;
 
         if (makeRotten)
         {
-            apple.appleType   = AppleType.Rotten;
+            apple.appleType = AppleType.Rotten;
             renderer.material = rottenMaterial;
         }
         else
         {
-            apple.appleType   = AppleType.Healthy;
+            apple.appleType = AppleType.Healthy;
             renderer.material = healthyMaterial;
         }
     }
+
 
     private void CorrectBasket(Apple picked)
     {
@@ -299,7 +359,8 @@ public class GridAppleSpawner : MonoBehaviour
             bool makeRotten = rng.NextDouble() < rottenChance;
             var appleScript = apple.GetComponent<Apple>();
             var renderer = apple.transform.GetChild(0).GetComponent<Renderer>();
-
+            appleScript.position = pos;
+            appleScript.isCalibrating = true;
             if (makeRotten)
             {
                 appleScript.appleType = AppleType.Rotten;
@@ -313,6 +374,12 @@ public class GridAppleSpawner : MonoBehaviour
         }
 
         Debug.Log($"Spawned {positions.Count} apples in arc.");
+    }
+
+    public Material OnCalibrationTouched(GridPosition position)
+    {
+        calibratedPositions.Add(position);
+        return transparentMaterial;
     }
 
 }
