@@ -6,13 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="5e7b911b-a52d-416b-b9c1-82a72ae53068" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Apple-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Apple-Game/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Apple.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Apple.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/AppleGrabCondition.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/AppleGrabCondition.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Start.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Start.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Script/Apple.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/Apple.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Script/GridAppleSpawner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/GridAppleSpawner.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +107,7 @@
       <workItem from="1748360852734" duration="3737000" />
       <workItem from="1748372786671" duration="1251000" />
       <workItem from="1748611429296" duration="830000" />
-      <workItem from="1748621093869" duration="5077000" />
+      <workItem from="1748621093869" duration="6554000" />
     </task>
     <servers />
   </component>

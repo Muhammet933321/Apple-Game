@@ -81,8 +81,7 @@ public class GridAppleSpawner : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(this.gameObject);
-        
+       
         Apple.PickedCorrectBasket += HandleApplePicked;
         Apple.PickedWrongBasket += HandleApplePicked;
         
@@ -105,6 +104,12 @@ public class GridAppleSpawner : MonoBehaviour
         float currentYaw = xrOrigin.Camera.transform.eulerAngles.y;
         xrOrigin.RotateAroundCameraUsingOriginUp(-currentYaw);
         transform.position = Camera.main.transform.position+new Vector3(0.2f,0,0.5f); // Adjust to headset position
+        Vector3 basePos = Camera.main.transform.position;
+        Debug.Log("Adjust");
+        Vector3 healthyTarget = basePos + healthyBasketOffset;
+        Vector3 rottenTarget  = basePos + rottenBasketOffset;
+        healthyBasket.transform.position = healthyTarget;
+        rottenBasket.transform.position = rottenTarget;
     }
     public void OnStartButton()
     {
@@ -128,33 +133,17 @@ public class GridAppleSpawner : MonoBehaviour
         //AdjustToHeadset();
         SpawnRandomApple();
     }
-    public void OnGrabbed()
-    {
-       Vector3 basePos = Camera.main.transform.position;
-
-        Vector3 healthyTarget = basePos + healthyBasketOffset;
-        Vector3 rottenTarget  = basePos + rottenBasketOffset;
-
-        // Start at ground level
-        healthyBasket.transform.position = new Vector3(healthyTarget.x, 0f, healthyTarget.z);
-        rottenBasket.transform.position  = new Vector3(rottenTarget.x, 0f, rottenTarget.z);
-
-        healthyBasket.SetActive(true);
-        rottenBasket.SetActive(true);
-
-        // Animate upward
-        healthyBasket.transform.DOMoveY(healthyTarget.y, basketMoveDuration);
-        rottenBasket.transform.DOMoveY(rottenTarget.y, basketMoveDuration);
-    }
-
 public void OnReleased(Vector3 appleReleasePosition, Apple apple)
 {
     Bounds healthyZone = new Bounds(
-        healthyBasket.transform.position + Vector3.up * 1f, 
-        Vector3.one);
+        healthyBasket.transform.position,
+        Vector3.one/2);
+    Debug.Log($"Healthy Zone Bounds - Center: {healthyZone.center}, Size: {healthyZone.size}");
+
     Bounds rottenZone = new Bounds(
-        rottenBasket.transform.position + Vector3.up * 1f, 
-        Vector3.one);
+        rottenBasket.transform.position,
+        Vector3.one/2);
+    Debug.Log($"Rotten Zone Bounds - Center: {rottenZone.center}, Size: {rottenZone.size}");
 
     if (apple == null)
     {
@@ -164,10 +153,11 @@ public void OnReleased(Vector3 appleReleasePosition, Apple apple)
 
     bool releasedInHealthyZone = healthyZone.Contains(appleReleasePosition);
     bool releasedInRottenZone  = rottenZone.Contains(appleReleasePosition);
-
+    
     if (releasedInHealthyZone || releasedInRottenZone)
     {
-        Debug.Log("Released IN ZONE");
+        string zoneName = releasedInHealthyZone ? "Healthy Zone" : "Rotten Zone";
+        Debug.Log($"Released IN ZONE: {zoneName}");
         bool isCorrectBasket = (releasedInHealthyZone && apple.appleType == AppleType.Healthy)
                                || (releasedInRottenZone  && apple.appleType == AppleType.Rotten);
 
@@ -176,9 +166,9 @@ public void OnReleased(Vector3 appleReleasePosition, Apple apple)
 
         // Get random local offset inside a small cube (e.g. 0.2 units in each direction)
         Vector3 randomLocalOffset = new Vector3(
-            UnityEngine.Random.Range(-0.1f, 0.1f),
-            UnityEngine.Random.Range( -0.05f, 0.1f),  // keep it slightly above the base
-            UnityEngine.Random.Range(-0.1f, 0.1f)
+            UnityEngine.Random.Range(-0.05f, 0.05f),
+            UnityEngine.Random.Range( -0.05f, 0.05f),  // keep it slightly above the base
+            UnityEngine.Random.Range(-0.05f, 0.05f)
         );
 
         // Final target position inside the basket
