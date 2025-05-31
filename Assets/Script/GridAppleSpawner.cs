@@ -8,6 +8,7 @@ using TMPro;
 using Unity.XR.CoreUtils;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 [Serializable]
@@ -71,12 +72,12 @@ public class GridAppleSpawner : MonoBehaviour
     [Header("Arc Settings")]
     [Range(-180f, 180f)]
     public float arcRotation = 0f; // Rotation offset in degrees
-    public TextMeshProUGUI basketText;
+    public Text basketText;
 
     /* ─────────── Unity lifecycle ─────────── */
     private void Start()
     {
-        OnStartButton();
+        //OnStartButton();
     }
 
     private void Awake()
@@ -167,7 +168,7 @@ public void OnReleased(Vector3 appleReleasePosition, Apple apple)
         // Get random local offset inside a small cube (e.g. 0.2 units in each direction)
         Vector3 randomLocalOffset = new Vector3(
             UnityEngine.Random.Range(-0.05f, 0.05f),
-            UnityEngine.Random.Range( -0.05f, 0.05f),  // keep it slightly above the base
+            UnityEngine.Random.Range( -0.05f, 0f),  // keep it slightly above the base
             UnityEngine.Random.Range(-0.05f, 0.05f)
         );
 
