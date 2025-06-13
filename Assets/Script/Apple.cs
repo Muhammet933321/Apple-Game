@@ -63,7 +63,7 @@ public class Apple : MonoBehaviour
         }
         //GetComponent<Rigidbody>().isKinematic = false;
         //GetComponent<Rigidbody>().useGravity = true;
-        parentSpawner.OnReleased(transform.position, this);
+        parentSpawner.OnReleased(transform.position, position, this);
         isGrabbed = false;
         isReleased = true;
     }
