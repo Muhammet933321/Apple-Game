@@ -6,14 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="5e7b911b-a52d-416b-b9c1-82a72ae53068" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Apple-Game/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Apple-Game/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Apple.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Apple.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/HandCurlInteractor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/HandCurlInteractor.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Game Start.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Game Start.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Script/GridAppleSpawner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/GridAppleSpawner.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Script/ScoreManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/ScoreManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Script/StartButton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Script/StartButton.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/URPProjectSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/URPProjectSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/XR/Settings/OpenXR Package Settings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/XR/Settings/OpenXR Package Settings.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +40,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "revert",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",

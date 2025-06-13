@@ -6,7 +6,10 @@ public class StartButton : MonoBehaviour
     public GridAppleSpawner spawner;
     private void OnTriggerEnter(Collider other)
     {
-        spawner.OnStartButton();
-        gameObject.SetActive(false);
+        if (other.tag == "Controller")
+        {
+            spawner.OnStartButton();
+            gameObject.SetActive(false);
+        }
     }
 }

@@ -74,6 +74,8 @@ public class GridAppleSpawner : MonoBehaviour
     public float arcRotation = 0f; // Rotation offset in degrees
     public Text basketText;
 
+    public bool isMeasureMode;
+    
     /* ─────────── Unity lifecycle ─────────── */
     private void Start()
     {
@@ -102,8 +104,9 @@ public class GridAppleSpawner : MonoBehaviour
     {
         //xrOrigin = FindAnyObjectByType<XROrigin>();
         xrOrigin.MoveCameraToWorldLocation(new Vector3(0,1.36f,0f));
-        float currentYaw = xrOrigin.Camera.transform.eulerAngles.y;
-        xrOrigin.RotateAroundCameraUsingOriginUp(-currentYaw);
+        float currentYaw = Camera.main.transform.eulerAngles.y;
+        var camYaw = xrOrigin.Camera.transform.eulerAngles.y;
+        xrOrigin.RotateAroundCameraPosition(Vector3.up, -camYaw);
         transform.position = Camera.main.transform.position+new Vector3(0.2f,0,0.5f); // Adjust to headset position
         Vector3 basePos = Camera.main.transform.position;
         Debug.Log("Adjust");
@@ -115,13 +118,16 @@ public class GridAppleSpawner : MonoBehaviour
     public void OnStartButton()
     {
         AdjustToHeadset();
-        //healthyBasket.transform.position = Camera.main.transform.position+new Vector3(0.3f,-0.5f,0.5f);
-        //rottenBasket.transform.position = Camera.main.transform.position+new Vector3(-0.3f,-0.5f,0.5f);
         GeneratePositions();
         SpawnAllApples();
-        //SpawnRandomApple();
-
-        StartCoroutine(CalibrationCountdown());
+        if (isMeasureMode)
+        {
+            
+        }
+        else
+        {
+            StartCoroutine(CalibrationCountdown());
+        }
     }
 
     IEnumerator CalibrationCountdown()
@@ -209,7 +215,7 @@ public void OnReleased(Vector3 appleReleasePosition, Apple apple)
         Vector3 offset = new Vector3(0.2f, 0f, -0.2f);
         Vector3 arcCenter = cam.position + offset; 
 
-        Vector3 baseForward = Quaternion.Euler(0f, arcRotation, 0f) * cam.forward;
+        Vector3 baseForward = Quaternion.Euler(0f, arcRotation, 0f) * Vector3.forward;
         Vector3 baseRight = Quaternion.AngleAxis(90f, Vector3.up) * baseForward;
 
         for (int layer = 0; layer < layerCount; layer++)
@@ -356,7 +362,7 @@ public void OnReleased(Vector3 appleReleasePosition, Apple apple)
             var appleScript = apple.GetComponent<Apple>();
             var renderer = apple.transform.GetChild(0).GetComponent<Renderer>();
             appleScript.position = pos;
-            appleScript.isCalibrating = true;
+            appleScript.isCalibrating = !isMeasureMode;
             if (makeRotten)
             {
                 appleScript.appleType = AppleType.Rotten;

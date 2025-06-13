@@ -1040,7 +1040,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   m_PhysicsTriggerInteraction: 1
-  curlThreshold: 0.5
+  curlThresholdGrab: 0.5
+  curlThresholdRelease: 0.3
   includeThumb: 0
   requiredFingers: 4
 --- !u!114 &116187398
@@ -7999,8 +8000,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 157.26, y: 88.44, z: 16.61}
-  m_Center: {x: 0, y: 0, z: -22.63}
+  m_Size: {x: 75.69937, y: 46.63824, z: 16.61}
+  m_Center: {x: -1.2519144, y: 3.8349218, z: -22.629938}
 --- !u!114 &867898645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17664,7 +17665,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   m_PhysicsTriggerInteraction: 1
-  curlThreshold: 0.5
+  curlThresholdGrab: 0.5
+  curlThresholdRelease: 0.3
   includeThumb: 0
   requiredFingers: 4
 --- !u!114 &1213846018
@@ -22458,6 +22460,7 @@ MonoBehaviour:
   basketMoveDuration: 0.5
   arcRotation: 0
   basketText: {fileID: 630715914}
+  isMeasureMode: 1
 --- !u!4 &1627566680
 Transform:
   m_ObjectHideFlags: 0
