@@ -98,7 +98,7 @@ public class GridAppleSpawner : MonoBehaviour
         xrOrigin.RotateAroundCameraPosition(Vector3.up, -camYaw);
 
         Vector3 basePos = Camera.main.transform.position;
-        transform.position = basePos + new Vector3(0.2f, 0f, 0.5f);
+        transform.position = basePos + new Vector3(0.2f, -0.5f, 0.5f);
 
         Vector3 healthyTarget = basePos + healthyBasketOffset;
         Vector3 rottenTarget = basePos + rottenBasketOffset;
