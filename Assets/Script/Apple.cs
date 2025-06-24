@@ -89,9 +89,15 @@ public class Apple : MonoBehaviour
 
     public void Pick(bool isCorrectBasket)
     {
-        if (isCorrectBasket) PickedCorrectBasket?.Invoke(this); else PickedWrongBasket?.Invoke(this);
-        Destroy(GetComponent<Apple>());
-        Destroy(GetComponent<XRGrabInteractable>());
+        if (isCorrectBasket)
+            PickedCorrectBasket?.Invoke(this);
+        else
+            PickedWrongBasket?.Invoke(this);
+
+        enabled = false;                   
+        grabInteractable.enabled = false;  
+        GetComponent<Rigidbody>().isKinematic = true;
+        GetComponent<Rigidbody>().isKinematic = true;
     }
     
 }

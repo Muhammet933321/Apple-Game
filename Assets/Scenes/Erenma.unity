@@ -2066,6 +2066,65 @@ Transform:
   - {fileID: 1121353820}
   m_Father: {fileID: 1496769705}
   m_LocalEulerAnglesHint: {x: 0, y: 72, z: 0}
+--- !u!1 &227740340
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 227740343}
+  - component: {fileID: 227740342}
+  - component: {fileID: 227740341}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &227740341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 227740340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2e2f0599a7f25d40a7fd51dbcf9d922, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data: {fileID: 227740342}
+  spawner: {fileID: 1627566679}
+--- !u!114 &227740342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 227740340}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2d68f740fc5d6848861a992d708014c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &227740343
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 227740340}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &229719083
 GameObject:
   m_ObjectHideFlags: 0
@@ -22082,9 +22141,7 @@ MonoBehaviour:
   leftHandInteractor: {fileID: 5359434743086937545}
   rightHandInteractor: {fileID: 2942156197658194471}
   applePrefab: {fileID: 5441553946450191219, guid: 0fa7b5d2aa7b44cbb9c718c274f1fbe6, type: 3}
-  range: 1
-  spacing: 0.15
-  startCoundown: 5
+  measureTimeSeconds: 15
   healthyMaterial: {fileID: 2100000, guid: eed3d7c4506c647f99215e47d9d52f5e, type: 2}
   rottenMaterial: {fileID: 2100000, guid: 1ddf64c80387382479fc7ac72130175e, type: 2}
   transparentMaterial: {fileID: 2100000, guid: 83fb67e95671c462e822559ce8130f74, type: 2}
@@ -36492,3 +36549,4 @@ SceneRoots:
   - {fileID: 275172206}
   - {fileID: 543450652944951075}
   - {fileID: 1042927090}
+  - {fileID: 227740343}

@@ -34,9 +34,7 @@ public class GridAppleSpawner : MonoBehaviour
 
     [Header("Prefab & Grid Settings")]
     public GameObject applePrefab;
-    public int range;
-    public float spacing;
-    public int startCoundown;
+    public int measureTimeSeconds = 10;
 
     [Header("Materials & Spawn Odds")]
     public Material healthyMaterial;
@@ -108,6 +106,7 @@ public class GridAppleSpawner : MonoBehaviour
 
     public void OnStartButton()
     {
+        GameModeManager.Instance.StartMeasurement();
         pickedGridsInMeasureMode.Clear();
         calibratedPositions.Clear();
         positions.Clear();
@@ -141,7 +140,7 @@ public class GridAppleSpawner : MonoBehaviour
     IEnumerator MeasureCountdown()
     {
         Debug.Log("🟢 Measure mode started.");
-        yield return new WaitForSecondsRealtime(10);
+        yield return new WaitForSecondsRealtime(measureTimeSeconds);
         Debug.Log("🔴 Measure mode ended. Filtering future apples.");
 
         // Save picked positions
@@ -161,7 +160,16 @@ public class GridAppleSpawner : MonoBehaviour
             .Where(pos => !exclude.Contains(pos.grid))
             .ToList();
 
-        SpawnRemainingApplesAfterMeasurement();
+        //ölçüm bitince, sonuç yazılmamış grid’leri Unreachable olarak işaretle
+        foreach (var pos in positions)
+        {
+            if (!GameModeManager.Instance.data.Results.ContainsKey(pos.grid))
+                GameModeManager.Instance.data.Record(pos.grid, AppleOutcome.Unreachable);
+        }
+        
+        //SpawnRemainingApplesAfterMeasurement();
+        
+        GameModeManager.Instance.StartWrongBasket();
     }
     private void SpawnRemainingApplesAfterMeasurement()
     {
@@ -196,50 +204,65 @@ public class GridAppleSpawner : MonoBehaviour
 
     public void OnReleased(Vector3 appleReleasePosition, GridPosition grid, Apple apple)
     {
-        Bounds healthyZone = new Bounds(healthyBasket.transform.position, Vector3.one / 2);
-        Bounds rottenZone = new Bounds(rottenBasket.transform.position, Vector3.one / 2);
-
         if (apple == null)
         {
-            Debug.LogWarning("No current apple found.");
+            Debug.LogWarning("OnReleased - apple is null!");
             return;
         }
 
-        bool inHealthy = healthyZone.Contains(appleReleasePosition);
-        bool inRotten = rottenZone.Contains(appleReleasePosition);
+        // 1) Sepet bölgeleri
+        Bounds healthyZone = new(healthyBasket.transform.position, Vector3.one * 0.5f);
+        Bounds rottenZone  = new(rottenBasket.transform.position,  Vector3.one * 0.5f);
 
+        bool inHealthy = healthyZone.Contains(appleReleasePosition);
+        bool inRotten  = rottenZone.Contains(appleReleasePosition);
+
+        AppleOutcome outcome;
+
+        // 2) Sepete mi girdi?
         if (inHealthy || inRotten)
         {
-            bool isCorrect = (inHealthy && apple.appleType == AppleType.Healthy)
-                          || (inRotten && apple.appleType == AppleType.Rotten);
-            
-            if (isMeasureMode && isCorrect)
-            {
-                if (!pickedGridsInMeasureMode.Contains(grid.grid))
-                    pickedGridsInMeasureMode.Add(grid.grid);
-            }
+            bool isCorrect =
+                (inHealthy && apple.appleType == AppleType.Healthy) ||
+                (inRotten  && apple.appleType == AppleType.Rotten);
 
+            outcome = isCorrect ? AppleOutcome.Success : AppleOutcome.WrongBasket;
+
+            // Hedef sepet ve küçük rastgele offset
             Transform targetBasket = inHealthy ? healthyBasket.transform : rottenBasket.transform;
-
-            Vector3 offset = new Vector3(
+            Vector3 offset = new(
                 UnityEngine.Random.Range(-0.05f, 0.05f),
                 UnityEngine.Random.Range(-0.05f, 0f),
                 UnityEngine.Random.Range(-0.05f, 0.05f)
             );
 
-            Vector3 target = targetBasket.position + offset;
-
-            apple.transform.DOMove(target, 0.5f)
-                .SetEase(Ease.InOutSine)
-                .OnComplete(() => apple.Pick(isCorrect));
+            apple.transform
+                 .DOMove(targetBasket.position + offset, basketMoveDuration)
+                 .SetEase(Ease.InOutSine)
+                 .OnComplete(() => apple.Pick(isCorrect));
         }
-        else
+        else             // 3) Sepete girmedi → düştü
         {
-            Debug.Log("Apple released outside baskets.");
-            apple.Pick(false);
-            Destroy(apple.gameObject);
+            Debug.Log("Apple dropped outside baskets.");
+            outcome = AppleOutcome.Drop;
+
+            apple.Pick(false);          // başarısız işaretle
+            Destroy(apple.gameObject);  // yerde kalmasını istemiyorsanız
         }
+
+        // 4) Ölçüm modundaysa sonucu kaydet
+        if (isMeasureMode && GameModeManager.Instance != null)
+        {
+            GameModeManager.Instance.data.Record(grid.grid, outcome);
+
+            // (İsterseniz) eski listenizi hâlâ kullanıyorsanız:
+            if (!pickedGridsInMeasureMode.Contains(grid.grid))
+                pickedGridsInMeasureMode.Add(grid.grid);
+        }
+        
+        
     }
+
 
     private void GeneratePositions()
     {
@@ -403,4 +426,32 @@ public class GridAppleSpawner : MonoBehaviour
         calibratedPositions.Add(position);
         return transparentMaterial;
     }
+    
+    // GridAppleSpawner.cs içine:
+    public void SpawnCustomApples(Vector3Int[] grids)
+    {
+        foreach (Transform child in transform)
+            Destroy(child.gameObject);
+
+        foreach (var grid in grids)
+        {
+            var pos = positions.Find(p => p.grid == grid);
+            if (pos.grid == Vector3Int.zero) continue;   // eşleşme yoksa atla
+
+            GameObject apple = Instantiate(applePrefab, pos.world, Quaternion.identity, transform);
+            apple.transform.localScale = Vector3.zero;
+            apple.transform.DOScale(new Vector3(0.04f, 0.04f, 0.04f), 0.5f);
+
+            var appleScript = apple.GetComponent<Apple>();
+            appleScript.position = pos;
+            appleScript.isCalibrating = false;
+
+            // materyal vs. seçim (ölçümdekine benzer)
+            bool makeRotten = rng.NextDouble() < rottenChance;
+            var renderer = apple.transform.GetChild(0).GetComponent<Renderer>();
+            appleScript.appleType = makeRotten ? AppleType.Rotten : AppleType.Healthy;
+            renderer.material = makeRotten ? rottenMaterial : healthyMaterial;
+        }
+    }
+
 }
