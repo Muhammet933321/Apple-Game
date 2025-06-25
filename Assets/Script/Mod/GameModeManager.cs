@@ -41,6 +41,7 @@ public class GameModeManager : MonoBehaviour
     {
         gameModeUI.SetActive(false);
         CurrentMode = GameMode.WrongBasket;
+        spawner.RealignToHeadset();
 
         // Ölçümden gelen sonuçlar arasından sadece WrongBasket olan grid’leri çek
         var wrongGrids = data.Filter(AppleOutcome.WrongBasket);
@@ -63,7 +64,7 @@ public class GameModeManager : MonoBehaviour
         gameModeUI.SetActive(false);
         
         CurrentMode = GameMode.DropOnly;
-
+        spawner.RealignToHeadset();
         /* 1️⃣  Ölçüm sonuçlarını topla */
         var drops   = data.Filter(AppleOutcome.Drop);       // Sepete giderken düşen
         var misses  = data.Filter(AppleOutcome.GrabMiss);   // Dokundu ama kavrayamadı
@@ -95,7 +96,7 @@ public class GameModeManager : MonoBehaviour
         gameModeUI.SetActive(false);
         
         CurrentMode = GameMode.Unreachable;
-
+        spawner.RealignToHeadset();
         /* 1️⃣ Ölçüm sonuçlarından sadece Unreachable grid’lerini al */
         var unreachableGrids = data.Filter(AppleOutcome.Unreachable);
 
@@ -119,6 +120,8 @@ public class GameModeManager : MonoBehaviour
     public void StartStatic()
     {
         gameModeUI.SetActive(false);
+        CurrentMode = GameMode.Static;
+        spawner.RealignToHeadset();
         // Static mod, elma oluşturma işlemini manuel olarak yapacağımız bir mod
         // Bu modda, elmaların konumlarını manuel olarak belirleyeceğiz
         Vector3Int[] manualGrids = new Vector3Int[]

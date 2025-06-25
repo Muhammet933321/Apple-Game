@@ -464,4 +464,9 @@ public class GridAppleSpawner : MonoBehaviour
         }
     }
 
+    public void RealignToHeadset()
+    {
+        AdjustToHeadset();      // zaten ihtiyaç duyduğumuz işi yapıyor
+        GeneratePositions();    // grid→world tablosunu yeni kafa konumuna göre üret
+    }
 }
