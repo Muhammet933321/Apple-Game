@@ -31,5 +31,5 @@ public enum AppleOutcome
     GrabMiss,      // temas var ama tutulamadı  (opsiyonel – isterseniz ekleyin)
     Drop,          // tutuldu ama sepete gitmeden düştü
     WrongBasket,   // yanlış sepete bırakıldı
-    Success        // doğru sepete bırakıldı
+    Success,        // doğru sepete bırakıldı
 }

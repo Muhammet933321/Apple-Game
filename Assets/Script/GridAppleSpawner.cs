@@ -169,8 +169,18 @@ public class GridAppleSpawner : MonoBehaviour
         
         //SpawnRemainingApplesAfterMeasurement();
         
-        GameModeManager.Instance.StartWrongBasket();
+        //GameModeManager.Instance.StartWrongBasket();
+        GameModeManager.Instance.gameModeUI.SetActive(true);
     }
+    
+    public void DestroyAllApples()
+    {
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+    
     private void SpawnRemainingApplesAfterMeasurement()
     {
         foreach (var pos in calibratedPositions)

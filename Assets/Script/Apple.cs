@@ -7,6 +7,7 @@ public class Apple : MonoBehaviour
 {
     public static event Action<Apple> PickedCorrectBasket;
     public static event Action<Apple> PickedWrongBasket;
+    public static event System.Action<Apple> OnAnyApplePicked;
     public AppleType appleType;
     public GridPosition position;
     public bool isGrabbed { get; private set; } = false;
@@ -98,6 +99,9 @@ public class Apple : MonoBehaviour
         grabInteractable.enabled = false;  
         GetComponent<Rigidbody>().isKinematic = true;
         GetComponent<Rigidbody>().isKinematic = true;
+        OnAnyApplePicked?.Invoke(this);
+        
     }
     
 }
+
