@@ -116,6 +116,7 @@ public class GridAppleSpawner : MonoBehaviour
         GeneratePositions();
         SpawnAllApples();
 
+        /*
         if (isMeasureMode)
         {
             if (measureTimerCoroutine != null)
@@ -126,6 +127,7 @@ public class GridAppleSpawner : MonoBehaviour
         {
             StartCoroutine(CalibrationCountdown());
         }
+        */
     }
 
     IEnumerator CalibrationCountdown()
