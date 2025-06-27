@@ -72,6 +72,7 @@ public class GridAppleSpawner : MonoBehaviour
 
     private List<Vector3Int> pickedGridsInMeasureMode = new();
     private Coroutine measureTimerCoroutine;
+    public GameObject finishButton;
 
     private void Awake()
     {
@@ -171,6 +172,7 @@ public class GridAppleSpawner : MonoBehaviour
         
         //GameModeManager.Instance.StartWrongBasket();
         GameModeManager.Instance.gameModeUI.SetActive(true);
+        finishButton.SetActive(true);
     }
     
     public void DestroyAllApples()
@@ -288,7 +290,7 @@ public class GridAppleSpawner : MonoBehaviour
         float verticalSpan = 40f;
 
         Transform cam = Camera.main.transform;
-        Vector3 offset = new(0.2f, 0f, -0.2f);
+        Vector3 offset = new(0.2f, 0f, -0.1f);
         Vector3 arcCenter = cam.position + offset;
 
         Vector3 baseForward = Quaternion.Euler(0f, arcRotation, 0f) * Vector3.forward;

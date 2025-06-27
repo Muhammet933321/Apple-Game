@@ -6,11 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Game Start.unity
-    guid: a060da1bd03344565bd8abadd43c57ee
-  - enabled: 0
-    path: Assets/Scenes/GameNext.unity
-    guid: 39f002d7faa2f4f909f326b20d918167
+    path: Assets/Scenes/Erenma.unity
+    guid: e890b93a7f2c335428b29112c35f93f5
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 6d48111fb40de4faaae50f9b1c0803cd, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

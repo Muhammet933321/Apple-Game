@@ -15,9 +15,7 @@ public class GameModeManager : MonoBehaviour
     public GridAppleSpawner spawner;             // sahnedeki mevcut spawner
     public GameObject gameModeUI;
     // (insp.’dan sürükle bırak)
-
     
-    public int modeTimer = 10; 
     private int remainingApples;
     
     private void Awake()
@@ -55,7 +53,6 @@ public class GameModeManager : MonoBehaviour
 
         // Spawner’a sadece bu grid’lerde tekrar elma oluşturmasını söyle
         spawner.SpawnCustomApples(wrongGrids.ToArray());
-        StartCoroutine(StopCurrentMode());
     }
     
 
@@ -88,7 +85,6 @@ public class GameModeManager : MonoBehaviour
         /* 5️⃣  Elmaların spawn’u */
         spawner.SpawnCustomApples(allGrids.ToArray());
         
-        StartCoroutine(StopCurrentMode());
     }
 
     public void StartUnreachable()
@@ -114,7 +110,6 @@ public class GameModeManager : MonoBehaviour
         /* 4️⃣ Spawn */
         spawner.SpawnCustomApples(unreachableGrids.ToArray());
         
-        StartCoroutine(StopCurrentMode());
     }
 
     public void StartStatic()
@@ -161,11 +156,16 @@ public class GameModeManager : MonoBehaviour
         CurrentMode = GameMode.None;  // Pasif bekleme
     }
     
-    private IEnumerator StopCurrentMode()
-    {
-        yield return new WaitForSeconds(modeTimer);
-        Debug.Log("Mode süresi doldu.");
-        FinishCurrentMode();
-        spawner.DestroyAllApples();
+    public void EndModeByButton()
+{
+    // Aboneliği temizle (aktifse)
+    Apple.OnAnyApplePicked -= HandleApplePicked;
+
+    // Elma kalabalığını yok et
+    spawner.DestroyAllApples();
+
+    // UI’yi geri aç + state’i sıfırla
+    FinishCurrentMode();
     }
+ 
 }

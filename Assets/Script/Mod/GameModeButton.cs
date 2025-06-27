@@ -9,9 +9,11 @@ public class GameModeButton : MonoBehaviour
     {
         if (other.tag == "Controller")
         {
+            GameModeManager.Instance.gameModeUI.SetActive(false);
             switch (gameMode)
             {
                 case GameMode.Measurement:
+                    Debug.Log("Measurement Mode Started");
                     SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
                     break;
                 case GameMode.WrongBasket:
@@ -26,8 +28,11 @@ public class GameModeButton : MonoBehaviour
                 case GameMode.Static:
                     GameModeManager.Instance.StartStatic();
                     break;
+                case GameMode.None:
+                    GameModeManager.Instance.EndModeByButton();
+                    GameModeManager.Instance.gameModeUI.SetActive(true);
+                    break;
             }
-            GameModeManager.Instance.gameModeUI.SetActive(false);
         }
     }
 }
