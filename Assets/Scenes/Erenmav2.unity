@@ -3636,6 +3636,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04a1471da1b14c14fbd6f54be76abeb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  progressLog: {fileID: 1389722765}
   levels:
   - appleCount: 7
     height: 0.1
@@ -14440,6 +14441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00b420dbda229074d983f4c979bc7628, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  progressLog: {fileID: 1389722765}
   levels:
   - appleCount: 4
     height: 0.1

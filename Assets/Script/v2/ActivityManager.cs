@@ -6,6 +6,7 @@ using UnityEngine;
 /// – Each derived manager only spawns its content + counts successes.
 public abstract class ActivityManager : MonoBehaviour
 {
+    public ProgressLog progressLog;
     [Header("Level setup")]
     public List<ReachLevel> levels;
 
@@ -62,7 +63,7 @@ public abstract class ActivityManager : MonoBehaviour
 
         Debug.Log($"■ {Mode} L{levelIdx}  %{lastPercent}  "
                 + $"({applesSuccess}/{applesTotal})");
-
+        progressLog?.AddEntry(Mode.ToString(), levelIdx, lastPercent);
         OnLevelEndCleanup();             // ← NEW: remove leftover items
     }
 
