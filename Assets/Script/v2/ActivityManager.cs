@@ -1,66 +1,67 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// Mod-bağımsız ortak akış (Restart / Continue / FinishOrNext tuşları aynıdır)
+/// Ortak akış: Restart, Continue, Finish, SeçiliLevel.
 public abstract class ActivityManager : MonoBehaviour
 {
     [Header("Level setup")]
-    public List<ReachLevel> levels;              // tüm modlar aynı seviye tanımını paylaşıyor
+    public List<ReachLevel> levels;
 
     /* runtime */
-    protected int  levelIdx;
-    protected int  applesTotal, applesSuccess;
-    protected bool levelActive;
-    protected int  lastPercent;                  // 0-100
+    protected int   levelIdx;
+    protected int   applesTotal, applesSuccess, applesProcessed;
+    protected bool  levelActive;
+    protected int   lastPercent;
 
-    /* alt sınıf enum’unu döndürür */
     public abstract TherapyMode Mode { get; }
 
-    /*────────── API (InputManager R/Q/F) ─────────*/
-    public void Restart()  => StartActivity(fromLast:false);
-    public void Continue() => StartActivity(fromLast:true);
-    public void FinishOrNext()
+    /*────────── ortak API ─────────*/
+    public void Restart()        => StartLevelAt(0);
+    public void Continue()
     {
-        if (levelActive) FinishLevel();
-        else if (lastPercent == 100 && levelIdx + 1 < levels.Count)
-        {
-            levelIdx++;
-            StartLevel();
-        }
+        int idx = GlobalData.progress.LastFullIndex(Mode);
+        StartLevelAt(Mathf.Max(0, idx));
     }
 
-    /*────────── template akış ─────────*/
-    void StartActivity(bool fromLast)
+    /// Klavye 1-5 ile doğrudan seviye seçimi
+    public void StartLevelAt(int idx)
     {
-        levelIdx = fromLast ? Mathf.Max(0, GlobalData.progress.LastFullIndex(Mode)) : 0;
+        if (idx < 0 || idx >= levels.Count)
+        {
+            Debug.LogWarning($"{Mode}: level {idx} yok.");
+            return;
+        }
+        levelIdx = idx;
         StartLevel();
     }
 
+    public void Finish()            // yalnızca bitir
+    {
+        if (!levelActive) return;
+        FinishLevel();
+    }
+
+    /*────────── template ─────────*/
     void StartLevel()
     {
-        if (levels.Count == 0) { Debug.LogError($"{Mode}: level list empty"); return; }
-
-        applesSuccess = 0;
+        applesSuccess = applesProcessed = 0;
         applesTotal   = levels[levelIdx].appleCount;
-        levelActive   = true;
         lastPercent   = 0;
+        levelActive   = true;
 
-        SpawnLevelContent(levels[levelIdx]);     // ← alt sınıf sağlar
-        Debug.Log($"► {Mode} L{levelIdx} start ({applesTotal} apple)");
+        SpawnLevelContent(levels[levelIdx]);
+        Debug.Log($"► {Mode} L{levelIdx} start ({applesTotal} apples)");
     }
 
     protected void FinishLevel()
     {
-        if (!levelActive) return;
         levelActive = false;
-
         lastPercent = Mathf.RoundToInt((float)applesSuccess / applesTotal * 100f);
         GlobalData.progress.SetPercent(Mode, levelIdx, lastPercent);
-
-        Debug.Log($"■ {Mode} L{levelIdx}  %{lastPercent}");
+        Debug.Log($"■ {Mode} L{levelIdx}  %{lastPercent}  (processed {applesProcessed})");
     }
 
-    /*────────── override edilmesi gerekenler ─────────*/
+    /*────────── çocuklar sağlar ─────────*/
     protected abstract void SpawnLevelContent(ReachLevel lv);
-    public    abstract void NotifySuccess(bool succeeded);   // elma geri bildirim
+    public    abstract void NotifySuccess(bool succeeded);
 }

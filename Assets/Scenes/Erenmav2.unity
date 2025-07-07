@@ -2128,7 +2128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2703a4635f09af42ad1caf384c698ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GrabFx: {fileID: 925679192}
+  globalGrabEffect: {fileID: 925679192}
 --- !u!1 &229719083
 GameObject:
   m_ObjectHideFlags: 0
@@ -14738,14 +14738,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levels:
-  - appleCount: 9
+  - appleCount: 4
     height: 0.1
     distance: 0.45
     arcSpanDeg: 90
-  - appleCount: 10
+  - appleCount: 5
     height: 0.1
     distance: 0.45
     arcSpanDeg: 120
+  - appleCount: 6
+    height: 0.15
+    distance: 0.6
+    arcSpanDeg: 150
   spawner: {fileID: 1627566681}
   basketSpawner: {fileID: 1599723409}
 --- !u!1 &1033501133

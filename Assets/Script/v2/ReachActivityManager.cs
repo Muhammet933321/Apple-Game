@@ -25,6 +25,6 @@ public class ReachActivityManager : ActivityManager
         applesSuccess++;
 
         if (spawner.RowEmpty)   // tüm elmalar toplandı
-            FinishLevel();
+            Debug.Log($"Reach L{levelIdx}  %{lastPercent} success");
     }
 }

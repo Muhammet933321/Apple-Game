@@ -1,24 +1,36 @@
 using System.Linq;
 using UnityEngine;
 
+/// Yalnızca aktif ActivityManager’ı açıp kapatır.
+/// Seviye otomatik başlamaz; 1-5 tuşlarıyla seçilir.
 public class GameModeController : MonoBehaviour
 {
     public static GameModeController Instance { get; private set; }
+
+    [Header("Global FX")]
+    [SerializeField] GrabEffect globalGrabEffect;   // ← VFX / SFX prefab
+    public GrabEffect GrabFx => globalGrabEffect;   // Apple*Target’lar buradan okur
+
+    [Tooltip("Geçerli modun manager’ı (henüz level yoksa null)")]
     public ActivityManager Current { get; private set; }
 
-    public GrabEffect GrabFx; 
+    void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(this);
+    }
 
-    void Awake() { if (Instance == null) Instance = this; }
-
+    /// Z X C V tuşlarından çağrılır.
+    /// Sadece ilgili manager’ı aktive eder, Restart etmez.
     public void SwitchMode(TherapyMode mode)
     {
-        foreach (var m in GetComponentsInChildren<ActivityManager>(true))
-            m.gameObject.SetActive(m.Mode == mode);
+        var managers = GetComponentsInChildren<ActivityManager>(true);
 
-        Current = GetComponentsInChildren<ActivityManager>(true)
-            .FirstOrDefault(m => m.Mode == mode);
+        foreach (var m in managers)
+            m.gameObject.SetActive(m.Mode == mode);   // yalnız bu mod açık
 
-        Current?.Restart();
-        Debug.Log("Switched to mode: " + mode);
+        Current = managers.FirstOrDefault(m => m.Mode == mode);
+
+        Debug.Log($"◎ Mode switched to {mode}. 1-5 tuşuyla seviye seç.");
     }
 }
