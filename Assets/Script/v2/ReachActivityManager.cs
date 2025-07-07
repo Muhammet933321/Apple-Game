@@ -16,6 +16,7 @@ public class ReachActivityManager : MonoBehaviour
 
     int   levelIndex;
     int   applesCollected;
+    bool levelActive = false; 
     ReachProgressData progress;                   // heat-map / save-file holder
 
     void Awake()
@@ -39,7 +40,10 @@ public class ReachActivityManager : MonoBehaviour
     void StartLevel(int idx)
     {
         applesCollected = 0;
+        levelIndex      = idx;
+        levelActive     = true;         // seviye başladı
         var lv = levels[idx];
+
         spawner.SpawnRow(lv.appleCount, lv.height, lv.distance, lv.arcSpanDeg);
     }
 
@@ -48,6 +52,8 @@ public class ReachActivityManager : MonoBehaviour
     public void LevelFinished()
     {
         // simple grading rule example
+        if (!levelActive) return;       // ikinci çağrıyı YOK say
+        levelActive = false;
         ReachResult res;
         int total = levels[levelIndex].appleCount;
         float ratio = (float)applesCollected / total;
@@ -85,7 +91,10 @@ public class ReachActivityManager : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.F))
         {
-            LevelFinished();
+            if (levelActive)
+            {
+                LevelFinished();
+            }
         }
         
     }

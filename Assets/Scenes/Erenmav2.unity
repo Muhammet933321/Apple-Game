@@ -2116,10 +2116,14 @@ MonoBehaviour:
     height: 0.1
     distance: 0.45
     arcSpanDeg: 60
-  - appleCount: 7
-    height: 0.2
-    distance: 0.55
-    arcSpanDeg: 60
+  - appleCount: 8
+    height: 0.11
+    distance: 0.5
+    arcSpanDeg: 90
+  - appleCount: 9
+    height: 0.12
+    distance: 0.6
+    arcSpanDeg: 120
   spawner: {fileID: 1627566681}
 --- !u!1 &229719083
 GameObject:
