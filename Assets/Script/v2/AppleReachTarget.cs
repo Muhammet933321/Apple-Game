@@ -3,21 +3,28 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class AppleReachTarget : MonoBehaviour
 {
-    RowAppleSpawner owner;
-    GrabEffect      fx;
+    GrabEffect fx;     // artık Inspector’da değil
 
-    public void Init(RowAppleSpawner sp, GrabEffect effect)
+    void Awake()
     {
-        owner = sp;
-        fx = effect;
-        GetComponent<Collider>().isTrigger = true;    // ensure trigger
+        fx = GameModeController.Instance?.GrabFx;
+
+        var col = GetComponent<Collider>();
+        col.isTrigger = true;
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Controller")) return;     // tag your finger colliders
+        /* 0️⃣  Only care in Reach mode */
+        if (GameModeController.Instance == null ||
+            GameModeController.Instance.Current.Mode != TherapyMode.Reach)
+            return;
 
-        fx?.FireEffect(transform.position);           // pop VFX
-        owner.OnAppleCollected(gameObject);
+        if (!other.CompareTag("Controller")) return;
+
+        fx?.FireEffect(transform.position);
+        ReachActivityManager.Instance?.NotifySuccess(true);
+        Destroy(gameObject);
     }
+
 }

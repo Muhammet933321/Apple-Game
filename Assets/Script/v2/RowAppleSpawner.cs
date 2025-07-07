@@ -1,92 +1,65 @@
-using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;                // ★ DOTween animation utilities
+using DG.Tweening;
 
-/// Spawns a single arc-shaped row of apples in front of the headset and
-/// keeps track of the live apples. When an apple is collected it notifies
-/// ReachActivityManager and destroys itself.
+/// Spawns a single arc row of apples.
+/// Provides two helpers: SpawnRow (reach) and SpawnRowGrip (grip).
 public class RowAppleSpawner : MonoBehaviour
 {
-    // ─────────────────────────── Inspector ────────────────────────────
-    [Header("Prefabs & FX")]
-    [SerializeField] private GameObject applePrefab;   // root prefab (mesh under child 0)
-    [SerializeField] private Material   healthyMat;    // simple green / red …
-    [SerializeField] private GrabEffect grabEffect;    // optional VFX/SFX on touch
+    [Header("Prefabs & Materials")]
+    [SerializeField] GameObject applePrefab;
+    [SerializeField] Material   healthyMat;
 
-    // ─────────────────────────── Runtime ──────────────────────────────
-    private readonly List<GameObject> liveApples = new();   // current row apples
+    public bool RowEmpty => transform.childCount == 0;
+    public int CurrentRowCount => transform.childCount;
 
-    /*──────────────────────────────────────────────────────────────────*/
-    /// Spawn an arc row relative to the headset
-    ///  count       : number of apples
-    ///  height (m)  : offset from HMD in Y (+ up / - down)
-    ///  distance(m) : forward distance from HMD
-    ///  arcSpanDeg  : total arc angle (e.g., 60° → -30° … +30°)
-    /*──────────────────────────────────────────────────────────────────*/
-    public void SpawnRow(int count, float height, float distance, float arcSpanDeg)
-    {
-        ClearRow();
 
-        if (applePrefab == null || healthyMat == null)
-        {
-            Debug.LogError("RowAppleSpawner: Prefab or material not assigned.", this);
-            return;
-        }
+    /*────────── Public API ─────────*/
 
-        Transform cam       = Camera.main.transform;
-        Vector3   camFwd    = Vector3.ProjectOnPlane(cam.forward, Vector3.up).normalized;
-        Vector3   camPos    = cam.position;
-
-        float stepDeg  = (count == 1) ? 0f : arcSpanDeg / (count - 1);
-        float startDeg = -arcSpanDeg * 0.5f;
-
-        for (int i = 0; i < count; i++)
-        {
-            /* 1️⃣  Arc position */
-            float      angle = startDeg + i * stepDeg;
-            Quaternion rot   = Quaternion.AngleAxis(angle, Vector3.up);
-            Vector3    offset = rot * (camFwd * distance);          // rotate “forward” by Y angle
-            Vector3    pos    = camPos + Vector3.up * height + offset;
-
-            /* 2️⃣  Instantiate apple */
-            GameObject apple = Instantiate(applePrefab, pos, Quaternion.identity, transform);
-
-            // Pop-in animation
-            apple.transform.localScale = Vector3.zero;
-            apple.transform
-                 .DOScale(Vector3.one * 0.04f, 0.3f)
-                 .SetEase(Ease.OutBack);
-
-            // Basic look
-            Renderer rend = apple.transform.GetChild(0).GetComponent<Renderer>();
-            rend.material = healthyMat;
-
-            /* 3️⃣  Touch behaviour */
-            var target = apple.AddComponent<AppleReachTarget>();
-            target.Init(this, grabEffect);
-
-            liveApples.Add(apple);
-        }
-    }
-
-    /// Destroy all current apples (e.g., when leaving the activity)
     public void ClearRow()
     {
-        foreach (var a in liveApples)
-            if (a) Destroy(a);
-        liveApples.Clear();
+        foreach (Transform c in transform) Destroy(c.gameObject);
     }
 
-    /*────────────── called by AppleReachTarget when touched ───────────*/
-    public void OnAppleCollected(GameObject apple)
+    /// Plain row for Reach activity
+    public void SpawnRow(int count, float height, float dist, float spanDeg)
     {
-        liveApples.Remove(apple);
-        Destroy(apple);
+        ClearRow();
+        SpawnRowInternal(count, height, dist, spanDeg, null);
+    }
 
-        ReachActivityManager.Instance?.NotifyAppleCollected();
+    /// Row for Grip activity – each apple gets AppleGripTarget wired to basket
+    public int SpawnRowGrip(ReachLevel lv, Transform basket)
+    {
+        ClearRow();
+        SpawnRowInternal(lv.appleCount, lv.height, lv.distance, lv.arcSpanDeg, basket);
+        return lv.appleCount;                          // üretilen sayı
+    }
 
-        // If row is empty, tell manager the level is done
-        if (liveApples.Count == 0)
-            Debug.Log("RowAppleSpawner: All apples collected, notifying manager.");
+    /*────────── Internal helper ─────────*/
+    void SpawnRowInternal(int count, float h, float d, float span, Transform basket)
+    {
+        if (!applePrefab || !healthyMat) { Debug.LogError("Spawner missing refs", this); return; }
+
+        Transform cam    = Camera.main.transform;
+        Vector3   fwd    = Vector3.ProjectOnPlane(cam.forward, Vector3.up).normalized;
+        Vector3   right  = Vector3.Cross(Vector3.up, fwd).normalized;
+        Vector3   basePos= cam.position + Vector3.up * h;
+
+        float step = count == 1 ? 0f : span / (count - 1);
+        for (int i = 0; i < count; i++)
+        {
+            float ang = -span * .5f + step * i;
+            Vector3 pos = basePos + Quaternion.AngleAxis(ang, Vector3.up) * (fwd * d);
+
+            var apple = Instantiate(applePrefab, pos, Quaternion.identity, transform);
+            apple.transform.localScale = Vector3.zero;
+            apple.transform.DOScale(Vector3.one * 0.04f, .3f).SetEase(Ease.OutBack);
+            apple.transform.GetChild(0).GetComponent<Renderer>().material = healthyMat;
+
+            if (basket != null)
+            {
+                apple.AddComponent<AppleGripTarget>();
+            }
+        }
     }
 }
