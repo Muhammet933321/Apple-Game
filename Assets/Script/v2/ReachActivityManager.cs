@@ -11,6 +11,8 @@ public class ReachActivityManager : MonoBehaviour
 
     [Header("Scene refs")]
     [SerializeField] RowAppleSpawner spawner;
+    [SerializeField] ProgressLog     progressLog;   // ◀︎ Inspector’dan sürükle
+
 
     /*────────── Runtime ──────────*/
     int   levelIndex;
@@ -82,6 +84,8 @@ public class ReachActivityManager : MonoBehaviour
         float ratio = (float)applesCollected / total;
         lastPercent = Mathf.RoundToInt(ratio * 100f);
 
+        progressLog?.AddEntry("Reach", levelIndex, lastPercent);
+        
         progress.Store(levelIndex, lastPercent);
         Debug.Log($"■ Level {levelIndex} finished — Başarı: %{lastPercent}");
     }

@@ -2098,6 +2098,7 @@ Transform:
   m_Children:
   - {fileID: 1627566680}
   - {fileID: 1151874917}
+  - {fileID: 1389722764}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &227740344
@@ -2126,6 +2127,7 @@ MonoBehaviour:
     distance: 0.6
     arcSpanDeg: 120
   spawner: {fileID: 1627566681}
+  progressLog: {fileID: 1389722765}
 --- !u!1 &229719083
 GameObject:
   m_ObjectHideFlags: 0
@@ -19123,6 +19125,51 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b0c78422845bac948a9080175e57ffff, type: 3}
+--- !u!1 &1389722763
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1389722764}
+  - component: {fileID: 1389722765}
+  m_Layer: 0
+  m_Name: ProgressLog
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1389722764
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1389722763}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 227740343}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1389722765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1389722763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44890abd00b2e5d45ac50a9733ed2643, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  history: []
 --- !u!1001 &1392381616
 PrefabInstance:
   m_ObjectHideFlags: 0
