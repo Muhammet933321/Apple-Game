@@ -1,104 +1,119 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-
-public enum ReachResult { Tam, Yari, Ceyrek, Sifir }
 
 public class ReachActivityManager : MonoBehaviour
 {
     public static ReachActivityManager Instance { get; private set; }
 
+    /*────────── Inspector ──────────*/
     [Header("Level setup")]
     public List<ReachLevel> levels;
 
     [Header("Scene refs")]
-    [SerializeField] RowAppleSpawner spawner;     
+    [SerializeField] RowAppleSpawner spawner;
 
+    /*────────── Runtime ──────────*/
     int   levelIndex;
     int   applesCollected;
-    bool levelActive = false; 
-    ReachProgressData progress;                   // heat-map / save-file holder
+    bool  levelActive = false;
+    int   lastPercent = 0;                 // %00 – %100
+    ReachProgressData progress;
 
     void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
-        Instance = this;
-        progress = ReachProgressData.Load();      // your own persistence
+        Instance  = this;
+        progress  = ReachProgressData.Load();
     }
 
-    /*────────── PUBLIC ENTRY POINTS ──────────*/
-
-    // therapist hits “Başlat” – choose start = 0 or last complete
+    /*────────── PUBLIC ENTRY ───────*/
     public void StartReachActivity(bool continueFromLast)
     {
-        levelIndex = continueFromLast ? progress.lastFullIndex : 0;
-        StartLevel(levelIndex);
+        int start = continueFromLast ? progress.lastFullIndex : 0;
+
+        // Hiç %100 seviye yoksa veya listenin dışındaysa → 0’dan başla
+        if (start < 0 || start >= levels.Count) start = 0;
+
+        StartLevel(start);
     }
 
-    /*────────── Level lifecycle ──────────*/
-
+    /*────────── Level lifecycle ────*/
     void StartLevel(int idx)
     {
+        // Yine de son kontrol – boş level listesi hatasına karşı
+        if (levels.Count == 0)
+        {
+            Debug.LogError("ReachActivityManager: 'levels' list is empty!");
+            return;
+        }
+
+        if (idx < 0 || idx >= levels.Count)
+        {
+            Debug.LogError($"ReachActivityManager: level index {idx} is out of range (0–{levels.Count-1}).");
+            return;
+        }
+
         applesCollected = 0;
         levelIndex      = idx;
-        levelActive     = true;         // seviye başladı
-        var lv = levels[idx];
+        levelActive     = true;
+        lastPercent     = 0;
 
+        var lv = levels[idx];
         spawner.SpawnRow(lv.appleCount, lv.height, lv.distance, lv.arcSpanDeg);
+
+        Debug.Log($"► Level {idx} started");
     }
 
     public void NotifyAppleCollected() => applesCollected++;
 
     public void LevelFinished()
     {
-        // simple grading rule example
-        if (!levelActive) return;       // ikinci çağrıyı YOK say
+        if (!levelActive) return;
         levelActive = false;
-        ReachResult res;
-        int total = levels[levelIndex].appleCount;
-        float ratio = (float)applesCollected / total;
-
-        if      (ratio >= 1f)   res = ReachResult.Tam;
-        else if (ratio >= .75f) res = ReachResult.Yari;
-        else if (ratio >= .50f) res = ReachResult.Ceyrek;
-        else                    res = ReachResult.Sifir;
-
-        progress.Store(levelIndex, res);             // update heat-map
-
-        // prepare next level or stop
-        levelIndex++;
-        bool more = levelIndex < levels.Count;
-
-        if (more)
-            StartLevel(levelIndex);
-        else
+        spawner.ClearRow();
+        /* Liste sınırı yine kontrol: */
+        if (levelIndex < 0 || levelIndex >= levels.Count)
         {
-            spawner.ClearRow();            // show summary / restart
+            Debug.LogError($"ReachActivityManager: level index {levelIndex} invalid during finish.");
+            return;
         }
+
+        int total   = levels[levelIndex].appleCount;
+        float ratio = (float)applesCollected / total;
+        lastPercent = Mathf.RoundToInt(ratio * 100f);
+
+        progress.Store(levelIndex, lastPercent);
+        Debug.Log($"■ Level {levelIndex} finished — Başarı: %{lastPercent}");
     }
 
-    /*────────── Therapist UI buttons ──────────*/
-
-    private void Update()
+    /*────────── Therapist keys ─────*/
+    void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            OnRestart();
-        }
-        else if (Input.GetKeyDown(KeyCode.Q))
-        {
-            OnContinue();
-        }
+        if (Input.GetKeyDown(KeyCode.R))      OnRestart();
+        else if (Input.GetKeyDown(KeyCode.Q)) OnContinue();
         else if (Input.GetKeyDown(KeyCode.F))
         {
             if (levelActive)
             {
+                // Seviye hâlâ sürüyor → bitir
                 LevelFinished();
             }
+            else
+            {
+                // Seviye bitmiş; %100 ise ve sıradaki seviye varsa → ilerle
+                bool success = lastPercent == 100;
+                bool hasNext = levelIndex + 1 < levels.Count;
+
+                if (success && hasNext)
+                {
+                    levelIndex++;
+                    StartLevel(levelIndex);
+                }
+            }
         }
-        
     }
 
-    public void OnRestart()  => StartReachActivity(false);  // “Baştan Başlat”
-    public void OnContinue() => StartReachActivity(true);   // “Kaldığı Yerden”
+    /*────────── Shortcuts ───────────*/
+    public void OnRestart()  => StartReachActivity(false);   // R
+    public void OnContinue() => StartReachActivity(true);    // Q
 }

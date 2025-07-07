@@ -4,18 +4,18 @@ using UnityEngine;
 [System.Serializable]
 public class ReachProgressData
 {
-    public List<ReachResult> results = new();   // one entry per level
+    public List<int> percentResults = new();     // her seviye için %00–%100
 
-    public int lastFullIndex
-        => results.FindLastIndex(r => r == ReachResult.Tam);
+    public int lastFullIndex =>
+        percentResults.FindLastIndex(p => p == 100);
 
-    /*──── persistence helpers ────*/
+    /*────────── Persistence ─────────*/
     const string KEY = "ReachProgressJson";
 
-    public void Store(int level, ReachResult res)
+    public void Store(int level, int percent)
     {
-        while (results.Count <= level) results.Add(ReachResult.Sifir);
-        results[level] = res;
+        while (percentResults.Count <= level) percentResults.Add(0);
+        percentResults[level] = Mathf.Clamp(percent, 0, 100);
         Save();
     }
 
