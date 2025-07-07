@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// Ortak akış: Restart, Continue, Finish, SeçiliLevel.
+/// Shared flow for all therapy modes.
+/// – Restart / Continue / Finish / Level-select (1-5)
+/// – Each derived manager only spawns its content + counts successes.
 public abstract class ActivityManager : MonoBehaviour
 {
     [Header("Level setup")]
@@ -11,37 +13,36 @@ public abstract class ActivityManager : MonoBehaviour
     protected int   levelIdx;
     protected int   applesTotal, applesSuccess, applesProcessed;
     protected bool  levelActive;
-    protected int   lastPercent;
+    protected int   lastPercent;                    // 0–100
 
     public abstract TherapyMode Mode { get; }
 
-    /*────────── ortak API ─────────*/
+    /*────────── Public API (called from Input/UI) ─────────*/
     public void Restart()        => StartLevelAt(0);
+
     public void Continue()
     {
         int idx = GlobalData.progress.LastFullIndex(Mode);
         StartLevelAt(Mathf.Max(0, idx));
     }
 
-    /// Klavye 1-5 ile doğrudan seviye seçimi
     public void StartLevelAt(int idx)
     {
         if (idx < 0 || idx >= levels.Count)
         {
-            Debug.LogWarning($"{Mode}: level {idx} yok.");
+            Debug.LogWarning($"{Mode}: Level {idx} not defined.");
             return;
         }
         levelIdx = idx;
         StartLevel();
     }
 
-    public void Finish()            // yalnızca bitir
+    public void Finish()         // Finish only – no auto “next”
     {
-        if (!levelActive) return;
-        FinishLevel();
+        if (levelActive) FinishLevel();
     }
 
-    /*────────── template ─────────*/
+    /*────────── Template flow ─────────*/
     void StartLevel()
     {
         applesSuccess = applesProcessed = 0;
@@ -50,18 +51,26 @@ public abstract class ActivityManager : MonoBehaviour
         levelActive   = true;
 
         SpawnLevelContent(levels[levelIdx]);
-        Debug.Log($"► {Mode} L{levelIdx} start ({applesTotal} apples)");
+        Debug.Log($"► {Mode} L{levelIdx} start  ({applesTotal} apples)");
     }
 
     protected void FinishLevel()
     {
-        levelActive = false;
-        lastPercent = Mathf.RoundToInt((float)applesSuccess / applesTotal * 100f);
+        levelActive  = false;
+        lastPercent  = Mathf.RoundToInt((float)applesSuccess / applesTotal * 100f);
         GlobalData.progress.SetPercent(Mode, levelIdx, lastPercent);
-        Debug.Log($"■ {Mode} L{levelIdx}  %{lastPercent}  (processed {applesProcessed})");
+
+        Debug.Log($"■ {Mode} L{levelIdx}  %{lastPercent}  "
+                + $"({applesSuccess}/{applesTotal})");
+
+        OnLevelEndCleanup();             // ← NEW: remove leftover items
     }
 
-    /*────────── çocuklar sağlar ─────────*/
+    /*────────── Must be implemented by derived classes ─────────*/
     protected abstract void SpawnLevelContent(ReachLevel lv);
     public    abstract void NotifySuccess(bool succeeded);
+
+    /*────────── Optional hooks ─────────*/
+    public virtual void Cleanup()        { }        // called when leaving mode
+    protected virtual void OnLevelEndCleanup() { }  // called when level finishes
 }

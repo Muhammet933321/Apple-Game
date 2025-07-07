@@ -1,10 +1,10 @@
 using UnityEngine;
 
-/// Kameraya göre konumlanan tek sepet.
+/// Spawns one basket in front of the headset; keeps reference to remove later.
 public class BasketSpawner : MonoBehaviour
 {
     [SerializeField] GameObject basketPrefab;
-    [SerializeField] Vector3    localOffset = new(0f, -0.4f, 0.6f); // x-right, y-up, z-forward
+    [SerializeField] Vector3    localOffset = new(0f, -0.4f, 0.6f);
 
     GameObject current;
 
@@ -12,20 +12,28 @@ public class BasketSpawner : MonoBehaviour
     {
         Transform cam = Camera.main.transform;
 
-        Vector3 camFwd  = Vector3.ProjectOnPlane(cam.forward, Vector3.up).normalized;
-        Vector3 camRight= Vector3.Cross(Vector3.up, camFwd).normalized;
+        Vector3 fwd   = Vector3.ProjectOnPlane(cam.forward, Vector3.up).normalized;
+        Vector3 right = Vector3.Cross(Vector3.up, fwd).normalized;
 
-        Vector3 worldPos =
+        Vector3 pos =
             cam.position
-            + camRight * localOffset.x
+            + right * localOffset.x
             + Vector3.up * localOffset.y
-            + camFwd    * localOffset.z;
+            + fwd   * localOffset.z;
 
         if (current == null)
-            current = Instantiate(basketPrefab, worldPos, Quaternion.identity, transform);
+            current = Instantiate(basketPrefab, pos, Quaternion.identity, transform);
         else
-            current.transform.position = worldPos;
+            current.transform.position = pos;
 
+        current.transform.rotation = Quaternion.identity;   // keep upright
         return current.transform;
+    }
+
+    /*────────── remove existing basket ─────────*/
+    public void ClearBasket()
+    {
+        if (current != null)
+            Destroy(current);
     }
 }

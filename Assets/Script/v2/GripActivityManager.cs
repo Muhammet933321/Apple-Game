@@ -5,6 +5,7 @@ public class GripActivityManager : ActivityManager
     public static GripActivityManager Instance { get; private set; }
     public override TherapyMode Mode => TherapyMode.Grip;
 
+    [Header("Scene refs")]
     [SerializeField] RowAppleSpawner spawner;
     [SerializeField] BasketSpawner   basketSpawner;
 
@@ -14,10 +15,14 @@ public class GripActivityManager : ActivityManager
         else Destroy(this);
     }
 
+    /*────────── Level content ─────────*/
     protected override void SpawnLevelContent(ReachLevel lv)
     {
         Transform basket = basketSpawner.SpawnOrMoveBasket();
         spawner.SpawnRowGrip(lv, basket);
+
+        applesProcessed = 0;          // counters reset here
+        applesTotal     = lv.appleCount;
     }
 
     public override void NotifySuccess(bool succeeded)
@@ -26,6 +31,19 @@ public class GripActivityManager : ActivityManager
 
         applesProcessed++;
         if (succeeded) applesSuccess++;
-        /* otomatik Finish kaldırıldı */
+        /* player finishes with F */
+    }
+
+    /*────────── Cleanup hooks ─────────*/
+    public override void Cleanup()
+    {
+        spawner.ClearRow();
+        basketSpawner.ClearBasket();
+    }
+
+    protected override void OnLevelEndCleanup()
+    {
+        spawner.ClearRow();
+        basketSpawner.ClearBasket();
     }
 }
