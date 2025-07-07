@@ -85,33 +85,27 @@ public class ReachActivityManager : MonoBehaviour
         progress.Store(levelIndex, lastPercent);
         Debug.Log($"■ Level {levelIndex} finished — Başarı: %{lastPercent}");
     }
-
-    /*────────── Therapist keys ─────*/
-    void Update()
+    
+    public void OnFinish()
     {
-        if (Input.GetKeyDown(KeyCode.R))      OnRestart();
-        else if (Input.GetKeyDown(KeyCode.Q)) OnContinue();
-        else if (Input.GetKeyDown(KeyCode.F))
+        if (levelActive)
         {
-            if (levelActive)
-            {
-                // Seviye hâlâ sürüyor → bitir
-                LevelFinished();
-            }
-            else
-            {
-                // Seviye bitmiş; %100 ise ve sıradaki seviye varsa → ilerle
-                bool success = lastPercent == 100;
-                bool hasNext = levelIndex + 1 < levels.Count;
+            LevelFinished();                      // seviye hâlâ sürüyorsa bitir
+        }
+        else
+        {
+            bool success = lastPercent == 100;    // %100 başarı kontrolü
+            bool hasNext = levelIndex + 1 < levels.Count;
 
-                if (success && hasNext)
-                {
-                    levelIndex++;
-                    StartLevel(levelIndex);
-                }
+            if (success && hasNext)
+            {
+                levelIndex++;
+                StartLevel(levelIndex);           // sonraki seviyeye geç
             }
         }
     }
+
+    
 
     /*────────── Shortcuts ───────────*/
     public void OnRestart()  => StartReachActivity(false);   // R
