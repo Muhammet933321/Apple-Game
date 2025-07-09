@@ -1,24 +1,35 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
-/// Shared flow for all therapy modes.
-/// – Restart / Continue / Finish / Level-select (1-5)
-/// – Each derived manager only spawns its content + counts successes.
+/// Base class shared by every therapy mode (Reach, Grip, Carry, Sort).
+/// * Handles Restart / Continue / Finish / Level-select (keys R Q F 1-5)
+/// * Adds an optional on-screen countdown before gameplay begins.
 public abstract class ActivityManager : MonoBehaviour
 {
-    public ProgressLog progressLog;
     [Header("Level setup")]
-    public List<ReachLevel> levels;
+    public List<ReachLevel> levels;                 // defined per mode in Inspector
 
-    /* runtime */
+    [Header("Countdown UI")]
+    [Tooltip("Panel that contains a single TMP_Text child; disabled by default.")]
+    [SerializeField] GameObject countdownUI;
+    [Tooltip("Seconds to count down before each level starts.")]
+    [Range(0.5f, 10f)]
+    [SerializeField] float countdownTime = 3f;
+
+    /* runtime – shared for all modes */
     protected int   levelIdx;
     protected int   applesTotal, applesSuccess, applesProcessed;
     protected bool  levelActive;
-    protected int   lastPercent;                    // 0–100
+    protected int   lastPercent;                    // 0–100 %
 
     public abstract TherapyMode Mode { get; }
 
-    /*────────── Public API (called from Input/UI) ─────────*/
+    TMP_Text countdownText;
+    Coroutine countdownCo;
+
+    /*──────────────── PUBLIC API (called from InputManager / UI) ─────────────*/
     public void Restart()        => StartLevelAt(0);
 
     public void Continue()
@@ -31,47 +42,97 @@ public abstract class ActivityManager : MonoBehaviour
     {
         if (idx < 0 || idx >= levels.Count)
         {
-            Debug.LogWarning($"{Mode}: Level {idx} not defined.");
+            Debug.LogWarning($"{Mode}: Level {idx} is not defined.");
             return;
         }
+
+        /* cancel any running countdown */
+        if (countdownCo != null)
+        {
+            StopCoroutine(countdownCo);
+            countdownCo = null;
+        }
+
         levelIdx = idx;
-        StartLevel();
+        SetupLevel();                 // initialise counters, maybe start countdown
     }
 
-    public void Finish()         // Finish only – no auto “next”
+    public void Finish()              // player manually ends level
     {
         if (levelActive) FinishLevel();
     }
 
-    /*────────── Template flow ─────────*/
-    void StartLevel()
+    /*──────────────── TEMPLATE FLOW ─────────────────────────────────────────*/
+    void SetupLevel()
     {
-        applesSuccess = applesProcessed = 0;
-        applesTotal   = levels[levelIdx].appleCount;
-        lastPercent   = 0;
-        levelActive   = true;
+        applesSuccess   = 0;
+        applesProcessed = 0;
+        applesTotal     = levels[levelIdx].appleCount;
+        lastPercent     = 0;
+        levelActive     = false;      // gameplay not active yet
 
+        if (countdownUI != null)
+        {
+            if (countdownText == null)
+                countdownText = countdownUI.GetComponentInChildren<TMP_Text>();
+
+            countdownCo = StartCoroutine(LevelCountdownRoutine());
+        }
+        else
+        {
+            BeginGameplay();
+        }
+    }
+
+    IEnumerator LevelCountdownRoutine()
+    {
+        countdownUI.SetActive(true);
+        float t = countdownTime;
+
+        while (t > 0f)
+        {
+            countdownText.text = Mathf.CeilToInt(t).ToString();
+            yield return null;
+            t -= Time.deltaTime;
+        }
+
+        countdownUI.SetActive(false);
+        countdownCo = null;
+        BeginGameplay();
+    }
+
+    void BeginGameplay()
+    {
+        levelActive = true;
         SpawnLevelContent(levels[levelIdx]);
+
         Debug.Log($"► {Mode} L{levelIdx} start  ({applesTotal} apples)");
     }
 
     protected void FinishLevel()
     {
-        levelActive  = false;
-        lastPercent  = Mathf.RoundToInt((float)applesSuccess / applesTotal * 100f);
+        levelActive   = false;
+        lastPercent   = Mathf.RoundToInt((float)applesSuccess / applesTotal * 100f);
         GlobalData.progress.SetPercent(Mode, levelIdx, lastPercent);
+
+        // Optional: write to on-screen progress log
+        FindObjectOfType<ProgressLog>()?.
+            AddEntry(Mode.ToString(), levelIdx, lastPercent);
 
         Debug.Log($"■ {Mode} L{levelIdx}  %{lastPercent}  "
                 + $"({applesSuccess}/{applesTotal})");
-        progressLog?.AddEntry(Mode.ToString(), levelIdx, lastPercent);
-        OnLevelEndCleanup();             // ← NEW: remove leftover items
+
+        OnLevelEndCleanup();          // remove leftover apples / basket
     }
 
-    /*────────── Must be implemented by derived classes ─────────*/
+    /*──────────────── ABSTRACT METHODS ─────────────────────────────────────*/
     protected abstract void SpawnLevelContent(ReachLevel lv);
     public    abstract void NotifySuccess(bool succeeded);
 
-    /*────────── Optional hooks ─────────*/
-    public virtual void Cleanup()        { }        // called when leaving mode
-    protected virtual void OnLevelEndCleanup() { }  // called when level finishes
+    /*──────────────── HOOKS ────────────────────────────────────────────────*/
+    /// Called when player switches away from this mode (Z X C V).
+    public virtual void Cleanup() { }
+
+    /// Called right after FinishLevel saves the result.
+    protected virtual void OnLevelEndCleanup() { }
 }
