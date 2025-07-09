@@ -29,6 +29,16 @@ public class FingerCurlLimiter : MonoBehaviour
         XRHandFingerID.Thumb, XRHandFingerID.Index, XRHandFingerID.Middle,
         XRHandFingerID.Ring,  XRHandFingerID.Little
     };
+    
+    public void SetCurlValue(float value)
+    {
+        if (value < 0f || value > 1f)
+        {
+            Debug.LogError("Clamp curl value must be between 0 and 1.");
+            return;
+        }
+        clampCurl = value;
+    }
 
     void Awake()
     {
