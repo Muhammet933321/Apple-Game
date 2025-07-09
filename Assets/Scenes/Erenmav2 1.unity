@@ -9978,6 +9978,7 @@ Transform:
   - {fileID: 397523890}
   - {fileID: 998077799}
   - {fileID: 2074968319}
+  - {fileID: 2142936925}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &227740344
@@ -71793,6 +71794,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1599723410}
   - component: {fileID: 1599723409}
+  - component: {fileID: 1599723411}
   m_Layer: 0
   m_Name: BasketSpawner
   m_TagString: Untagged
@@ -71829,6 +71831,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 227740343}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1599723411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1599723408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 603d689a78f6cb14783cd33f0872eb90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  basketPrefab: {fileID: 4722703652484948413, guid: 7592b521b27d09549a72b38c3c98c7bc, type: 3}
+  healthyMat: {fileID: 2100000, guid: eed3d7c4506c647f99215e47d9d52f5e, type: 2}
+  rottenMat: {fileID: 2100000, guid: 1ddf64c80387382479fc7ac72130175e, type: 2}
+  centreOffset: {x: 0, y: -0.4, z: 0.3}
+  halfGap: 0.25
 --- !u!1001 &1599886653
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -73327,6 +73346,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   applePrefab: {fileID: 5441553946450191219, guid: 0fa7b5d2aa7b44cbb9c718c274f1fbe6, type: 3}
   healthyMat: {fileID: 2100000, guid: eed3d7c4506c647f99215e47d9d52f5e, type: 2}
+  rottenMat: {fileID: 2100000, guid: 1ddf64c80387382479fc7ac72130175e, type: 2}
 --- !u!1 &1627646529
 GameObject:
   m_ObjectHideFlags: 0
@@ -93498,6 +93518,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4973117701365034, guid: a8be9f01144e2af499b282b2e273a5eb, type: 3}
   m_PrefabInstance: {fileID: 1100907810}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2142936924
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2142936925}
+  - component: {fileID: 2142936926}
+  m_Layer: 0
+  m_Name: Sort
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2142936925
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142936924}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 227740343}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2142936926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2142936924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca5ceb0a9d9645d47863a4b3b7d01807, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levels:
+  - appleCount: 6
+    height: 0.1
+    distance: 0.45
+    arcSpanDeg: 90
+  - appleCount: 8
+    height: 0.1
+    distance: 0.45
+    arcSpanDeg: 120
+  countdownUI: {fileID: 1887120612}
+  countdownTime: 3
+  spawner: {fileID: 1627566681}
+  dualSpawner: {fileID: 1599723411}
 --- !u!1001 &2143266995
 PrefabInstance:
   m_ObjectHideFlags: 0
