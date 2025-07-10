@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Firebase;
 using Firebase.Firestore;
 using UnityEngine;
 
@@ -26,6 +27,9 @@ public class SessionWatcher : MonoBehaviour
     private void Start()
     {
         db = FirebaseFirestore.DefaultInstance;
+        Debug.Log($"Firebase Project ID: {FirebaseApp.DefaultInstance.Options.ProjectId}");
+        Debug.Log($"Firebase App Name: {FirebaseApp.DefaultInstance.Name}");
+
         pollingCoroutine = StartCoroutine(PollDatabaseRoutine());
     }
 
@@ -54,6 +58,7 @@ public class SessionWatcher : MonoBehaviour
         var patientsSnapshot = await db.Collection("patients").GetSnapshotAsync();
         foreach (var patientDoc in patientsSnapshot.Documents)
         {
+            Debug.Log($"Checking patient: {patientDoc.Id}");
             var sessionsSnapshot = await db.Collection("patients")
                 .Document(patientDoc.Id)
                 .Collection("sessions")
@@ -73,8 +78,8 @@ public class SessionWatcher : MonoBehaviour
 
                 // Trigger game setup events
                 OnSessionStarted?.Invoke();
-                OnLevelChanged?.Invoke(Convert.ToInt32(lastSessionData["level"]));
                 OnModeChanged?.Invoke(Convert.ToInt32(lastSessionData["mode"]));
+                OnLevelChanged?.Invoke(Convert.ToInt32(lastSessionData["level"]));
                 OnCurlChanged?.Invoke(Convert.ToInt32(lastSessionData["curl"]));
                 OnHandChanged?.Invoke(Convert.ToInt32(lastSessionData["hand"]));
                 break;
