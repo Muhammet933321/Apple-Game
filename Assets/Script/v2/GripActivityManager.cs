@@ -16,13 +16,13 @@ public class GripActivityManager : ActivityManager
     }
 
     /*────────── Level content ─────────*/
-    protected override void SpawnLevelContent(ReachLevel lv)
+    protected override void SpawnLevelContent(int lv)
     {
         Transform basket = basketSpawner.SpawnOrMoveBasket();
-        spawner.SpawnRowGrip(lv, basket);
+        spawner.SpawnGripLevel(lv, basket);
 
         applesProcessed = 0;          // counters reset here
-        applesTotal     = lv.appleCount;
+        applesTotal     = 8;
     }
 
     public override void NotifySuccess(bool succeeded)
