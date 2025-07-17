@@ -126,20 +126,19 @@ public class FirebaseDatabaseService : MonoBehaviour
             else
             {
                 config.gameMode = AppleGameMode.Reach; // Varsayýlan deðer
-                Debug.LogError($"Firebase'den gelen '{gameModeString}' deðeri geçerli bir AppleGameMode deðil! Varsayýlan olarak 'touch' ayarlandý.");
+                Debug.LogError($"Firebase'den gelen '{gameModeString}' deðeri geçerli bir AppleGameMode deðil! Varsayýlan olarak 'Reach' ayarlandý.");
             }
         }
         else
         {
             config.gameMode = AppleGameMode.Reach; // Varsayýlan deðer
-            Debug.LogWarning("Firebase'de 'gameMode' alaný bulunamadý. Varsayýlan olarak 'touch' ayarlandý.");
+            Debug.LogWarning("Firebase'de 'gameMode' alaný bulunamadý. Varsayýlan olarak 'Reach' ayarlandý.");
         }
 
-        // --- STATUS AYARI (YENÝ EKLENDÝ) ---
+        // --- STATUS AYARI ---
         if (snapshot.Child("status").Exists)
         {
             string statusString = snapshot.Child("status").Value.ToString();
-            // String'i AppleGameStatus enum'una çevir (büyük/küçük harf duyarsýz)
             if (Enum.TryParse<AppleGameStatus>(statusString, true, out AppleGameStatus status))
             {
                 config.status = status;
@@ -156,7 +155,38 @@ public class FirebaseDatabaseService : MonoBehaviour
             Debug.LogWarning("Firebase'de 'status' alaný bulunamadý. Varsayýlan olarak 'idle' ayarlandý.");
         }
 
-        Debug.Log($"AppleGameConfig oluþturuldu -> Seviye: {config.level}, Oyun Modu: {config.gameMode}, Durum: {config.status}");
+        // --- APPLE DIRECTION AYARI (YENÝ EKLENDÝ) ---
+        var appleDirectionSnapshot = snapshot.Child("appleDirection");
+        if (appleDirectionSnapshot.Exists && appleDirectionSnapshot.HasChildren)
+        {
+            // Listeyi her seferinde temizleyip yeniden doldurmak daha güvenlidir.
+            config.appleDirections.Clear();
+
+            foreach (var directionNode in appleDirectionSnapshot.Children)
+            {
+                try
+                {
+                    // x, y, z deðerlerini float olarak oku
+                    float.TryParse(directionNode.Child("x").Value?.ToString(), out float x);
+                    float.TryParse(directionNode.Child("y").Value?.ToString(), out float y);
+                    float.TryParse(directionNode.Child("z").Value?.ToString(), out float z);
+
+                    // Yeni Vector3 oluþtur ve listeye ekle
+                    config.appleDirections.Add(new Vector3(x, y, z));
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogError($"appleDirection okunurken bir hata oluþtu: {ex.Message}");
+                }
+            }
+            Debug.Log($"{config.appleDirections.Count} adet appleDirection yüklendi.");
+        }
+        else
+        {
+            Debug.LogWarning("Firebase'de 'appleDirection' alaný bulunamadý veya içi boþ.");
+        }
+
+        Debug.Log($"AppleGameConfig oluþturuldu -> Seviye: {config.level}, Oyun Modu: {config.gameMode}, Durum: {config.status}, Yön Sayýsý: {config.appleDirections.Count}");
 
         return config;
     }

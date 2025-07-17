@@ -118,6 +118,10 @@ public class AppleGameConfig
     public AppleGameMode gameMode;
     public AppleGameStatus status;
     public int level;
+    public List<Vector3> appleDirections = new List<Vector3>();
+
+
+
 
 }
 public enum AppleGameMode

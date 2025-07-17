@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AppleGameController : MonoBehaviour
@@ -52,7 +53,6 @@ public class AppleGameController : MonoBehaviour
                 Debug.LogError($"Bilinmeyen oyun modu: {mode}. Oyun baþlatýlamadý.");
                 return; // Bilinmeyen bir mod ise iþlemi sonlandýr.
         }
-
 
         Curr.StartLevelAt(level);
         Debug.Log($"<color=green>Oyun Baþlatýldý!</color> Mod: <b>{mode}</b>, Seviye: <b>{level}</b>");
