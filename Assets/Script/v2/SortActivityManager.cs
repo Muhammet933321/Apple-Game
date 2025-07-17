@@ -16,13 +16,13 @@ public class SortActivityManager : ActivityManager
     }
 
     /*────────── Level spawn ─────────*/
-    protected override void SpawnLevelContent(ReachLevel lv)
+    protected override void SpawnLevelContent(int lv)
     {
         var (healthy, rotten) = dualSpawner.SpawnOrMove();
-        spawner.SpawnRowSort(lv, healthy, rotten);
+        spawner.SpawnSortLevel(lv, healthy, rotten);
 
         applesProcessed = 0;
-        applesTotal     = lv.appleCount;
+        applesTotal     = 8;
     }
 
     /*────────── Success / fail ─────────*/

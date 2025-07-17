@@ -17,13 +17,13 @@ public class CarryActivityManager : ActivityManager
     }
 
     /*────────── Level spawn ─────────*/
-    protected override void SpawnLevelContent(ReachLevel lv)
+    protected override void SpawnLevelContent(int lv)
     {
         Transform basket = basketSpawner.SpawnOrMoveBasket();
-        spawner.SpawnRowCarry(lv, basket);
+        spawner.SpawnCarryLevel(lv, basket);
 
         applesProcessed = 0;
-        applesTotal     = lv.appleCount;
+        applesTotal     = 8;
     }
 
     /*────────── Success / fail from AppleCarryTarget ─────────*/

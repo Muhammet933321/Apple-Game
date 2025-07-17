@@ -14,9 +14,11 @@ public class ReachActivityManager : ActivityManager
     }
 
     /*────────── Level content ─────────*/
-    protected override void SpawnLevelContent(ReachLevel lv)
+    protected override void SpawnLevelContent(int lv)
     {
-        spawner.SpawnRow(lv.appleCount, lv.height, lv.distance, lv.arcSpanDeg);
+        spawner.SpawnReachLevel(lv);
+        applesProcessed = 0;          // reset counters
+        applesTotal     = 8;          // 8 apples per level
     }
 
     public override void NotifySuccess(bool _)

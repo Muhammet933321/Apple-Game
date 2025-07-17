@@ -8,9 +8,7 @@ using TMPro;
 /// * Adds an optional on-screen countdown before gameplay begins.
 public abstract class ActivityManager : MonoBehaviour
 {
-    [Header("Level setup")]
-    public List<ReachLevel> levels;                 // defined per mode in Inspector
-
+   
     [Header("Countdown UI")]
     [Tooltip("Panel that contains a single TMP_Text child; disabled by default.")]
     [SerializeField] GameObject countdownUI;
@@ -40,7 +38,7 @@ public abstract class ActivityManager : MonoBehaviour
 
     public void StartLevelAt(int idx)
     {
-        if (idx < 0 || idx >= levels.Count)
+        if (idx < 0)
         {
             Debug.LogWarning($"{Mode}: Level {idx} is not defined.");
             return;
@@ -67,7 +65,6 @@ public abstract class ActivityManager : MonoBehaviour
     {
         applesSuccess   = 0;
         applesProcessed = 0;
-        applesTotal     = levels[levelIdx].appleCount;
         lastPercent     = 0;
         levelActive     = false;      // gameplay not active yet
 
@@ -104,7 +101,7 @@ public abstract class ActivityManager : MonoBehaviour
     void BeginGameplay()
     {
         levelActive = true;
-        SpawnLevelContent(levels[levelIdx]);
+        SpawnLevelContent(levelIdx);
 
         Debug.Log($"► {Mode} L{levelIdx} start  ({applesTotal} apples)");
     }
@@ -126,7 +123,7 @@ public abstract class ActivityManager : MonoBehaviour
     }
 
     /*──────────────── ABSTRACT METHODS ─────────────────────────────────────*/
-    protected abstract void SpawnLevelContent(ReachLevel lv);
+    protected abstract void SpawnLevelContent(int lv);
     public    abstract void NotifySuccess(bool succeeded);
 
     /*──────────────── HOOKS ────────────────────────────────────────────────*/
