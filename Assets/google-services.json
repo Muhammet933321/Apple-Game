@@ -1,21 +1,22 @@
 {
   "project_info": {
-    "project_number": "386753603604",
-    "project_id": "apple-harvest-vr",
-    "storage_bucket": "apple-harvest-vr.firebasestorage.app"
+    "project_number": "829647184082",
+    "firebase_url": "https://unityrehabilitationar-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "unityrehabilitationar",
+    "storage_bucket": "unityrehabilitationar.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:386753603604:android:caaca16005fdafb5df1f01",
+        "mobilesdk_app_id": "1:829647184082:android:052dde08ad15cf800f8d0b",
         "android_client_info": {
-          "package_name": "com.Trb.AppleHarvestVR"
+          "package_name": "com.Rafora.RehabilitationAR"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBYJYB3mRtN7DyPreETEDqFE-LsgR7_LyQ"
+          "current_key": "AIzaSyCS_0bcdOUjA_5ov_f4eV2nz3bzIJY3fn0"
         }
       ],
       "services": {
