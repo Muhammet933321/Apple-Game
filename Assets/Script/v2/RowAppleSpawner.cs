@@ -1,74 +1,57 @@
+using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
-/// <summary>
 /// Kamera uzayına dayalı elma spawner.
-/// Layout: Line (eski sıra) veya ArcHorizontal (ayarlanabilir yay).
-/// levelIndex (0-4) -> Y ve Z aralıklarından konum seçer.
-/// Aktif el (sağ/sol) seçimine göre tüm dağılım kamera.right yönünde ±kaydırılır.
-/// </summary>
+/// ------------------------------------------------------------
+/// Özellikler:
+/// • Grid: X (vars 8), Y (5), Z (5) aralığı; inspector’dan min/max.
+/// • Layout: Line (sağ‑sol sıra) veya ArcHorizontal (ayarlanabilir yatay yay).
+/// • Level spawn: levelIndex 0..4 → Y & Z eksenlerinden nokta.
+/// • Custom spawn: harici List<Vector3Int> grid indeksleri.
+/// • Sağ / Sol el seçimine göre tüm dağılım yan tarafa kayar.
+/// • Sort modunda sağlıklı / çürük materyal desteği.
+/// ------------------------------------------------------------
 public class RowAppleSpawner : MonoBehaviour
 {
     /*──────────────── Prefabs & Materials ────────────────*/
     [Header("Prefabs & Materials")]
     [SerializeField] GameObject applePrefab;
     [SerializeField] Material   healthyMat;
-    [SerializeField] Material   rottenMat; // Sort modunda
+    [SerializeField] Material   rottenMat;     // Sort
 
     /*──────────────── Camera Anchor ──────────────────────*/
     [Header("Camera Anchor")]
-    [Tooltip("Elmaların spawn yönünü belirleyecek kamera. Boşsa Camera.main kullanılır.")]
+    [Tooltip("Elmaların hizalanacağı kamera. Boşsa Camera.main bulunur.")]
     [SerializeField] Camera targetCamera;
-
-    [Tooltip("Kamera orijinine eklenecek dünya uzayında offset. Örn: (0,-0.2,0) göz -> göğüs.")]
+    [Tooltip("Kamera merkezine eklenecek dünya uzayı offset (örn. göz -> göğüs).")]
     [SerializeField] Vector3 camSpaceYOffset = Vector3.zero;
 
-    public enum RotationMode
-    {
-        PrefabRotation,
-        MatchCamera,
-        FaceCameraBillboard
-    }
-
-    [SerializeField] RotationMode rotationMode = RotationMode.MatchCamera;
-
-    /*──────────────── Hand Selection ─────────────────────*/
+    /*──────────────── El / Taraf Seçimi ─────────────────*/
     public enum HandSide { Right, Left }
-
     [Header("Hand Selection")]
     [SerializeField] HandSide activeHand = HandSide.Right;
-
-    [Tooltip("Satır / yay merkezinin kameradan yana kaydırma mesafesi (metre). Sağ el -> +X, Sol el -> -X.")]
+    [Tooltip("Kameradan yana kaydırma (m). Sağ el +X, sol el -X.")]
     [SerializeField] float handSideOffset = 0.15f;
 
-    /// <summary>Runtime'da etkin eli değiştir.</summary>
-    public void SetActiveHand(HandSide hand) => activeHand = hand;
-
-    /// <summary>Sağ/Sol arasında hızlı geçiş.</summary>
+    public void SetActiveHand(HandSide h) => activeHand = h;
     public void ToggleHand() =>
         activeHand = (activeHand == HandSide.Right) ? HandSide.Left : HandSide.Right;
 
-    /*──────────────── Layout Seçimi ─────────────────────*/
-    public enum Layout
-    {
-        Line,          // xMin..xMax lineer sıra
-        ArcHorizontal  // cam.up etrafında yatay yay
-    }
-
+    /*──────────────── Layout ─────────────────────────────*/
+    public enum Layout { Line, ArcHorizontal }
     [Header("Layout")]
     [SerializeField] Layout layout = Layout.Line;
-
-    [Tooltip("ArcHorizontal modunda toplam yay açısı (derece). Örn. 60 => -30..+30.")]
+    [Tooltip("Arc toplam açısı (derece). Örn. 60 => -30 .. +30.")]
     [SerializeField] float arcAngleDeg = 60f;
-
-    [Tooltip("ArcHorizontal modunda seçilen seviyenin Z mesafesine eklenecek ekstra ileri-geri offset (metre).")]
+    [Tooltip("Arc modunda Z mesafesine eklenecek ileri/geri sapma (m).")]
     [SerializeField] float arcCenterBias = 0f;
 
-    /*──────────────── Grid Ranges (relative to camera axes) ─────*/
+    public enum RotationMode { PrefabRotation, MatchCamera, FaceCameraBillboard }
+    [Tooltip("Elmanın rotasyonu.")]
+    [SerializeField] RotationMode rotationMode = RotationMode.MatchCamera;
+
+    /*──────────────── Grid Aralıkları (kamera eksenleri) ─*/
     [Header("Grid Ranges (relative to camera axes)")]
     [SerializeField] float xMin = -0.40f;
     [SerializeField] float xMax =  0.40f;
@@ -79,9 +62,9 @@ public class RowAppleSpawner : MonoBehaviour
 
     /*──────────────── Grid Counts ───────────────────────*/
     [Header("Grid Counts")]
-    [SerializeField, Min(1)] int xCount = 8;  // sabit
-    [SerializeField, Min(1)] int yCount = 5;  // sabit
-    [SerializeField, Min(1)] int zCount = 5;  // sabit
+    [SerializeField, Min(1)] int xCount = 8;  // 0..7
+    [SerializeField, Min(1)] int yCount = 5;  // 0..4
+    [SerializeField, Min(1)] int zCount = 5;  // 0..4
 
     /*──────────────── Spawn FX ──────────────────────────*/
     [Header("Spawn FX")]
@@ -91,179 +74,146 @@ public class RowAppleSpawner : MonoBehaviour
 
     /*──────────────── Dahili ────────────────────────────*/
     enum SpawnMode { Reach, Grip, Carry, Sort }
-    float[] _xs, _ys, _zs;
+    float[] xs, ys, zs;    // grid değerleri (metre)
 
     void Awake()      => BuildGrid();
     void OnValidate() => BuildGrid();
 
-    /*--------------------------------------------------------------
-     * Grid hesaplama (lineer eşit aralık)
-     *--------------------------------------------------------------*/
-    void BuildGrid()
-    {
-        _xs = BuildAxis(xMin, xMax, xCount);
-        _ys = BuildAxis(yMin, yMax, yCount);
-        _zs = BuildAxis(zMin, zMax, zCount);
-    }
-
-    static float[] BuildAxis(float min, float max, int count)
-    {
-        if (count <= 1) return new[] { (min + max) * 0.5f };
-        float[] arr = new float[count];
-        float step = (max - min) / (count - 1);
-        for (int i = 0; i < count; i++) arr[i] = min + step * i;
-        return arr;
-    }
-
-    /*--------------------------------------------------------------
-     * Temizlik
-     *--------------------------------------------------------------*/
+    /*──────────────── PUBLIC TEMİZLİK ───────────────────*/
     public void ClearRow()
     {
         for (int i = transform.childCount - 1; i >= 0; i--)
             Destroy(transform.GetChild(i).gameObject);
     }
 
-    /*--------------------------------------------------------------
-     * Public API - Mod başına convenience fonksiyonlar
-     *--------------------------------------------------------------*/
-    public void SpawnReachLevel(int levelIndex)
-        => SpawnLevel(levelIndex, SpawnMode.Reach, null, null);
+    /*──────────────── PUBLIC LEVEL SPAWN API ────────────*/
+    public void SpawnReachLevel(int level)                                  => SpawnLevel(level, SpawnMode.Reach, null, null);
+    public void SpawnGripLevel (int level, Transform basket)                => SpawnLevel(level, SpawnMode.Grip,  basket, null);
+    public void SpawnCarryLevel(int level, Transform basket)                => SpawnLevel(level, SpawnMode.Carry, basket, null);
+    public void SpawnSortLevel (int level, Transform healthy, Transform ro) => SpawnLevel(level, SpawnMode.Sort,  healthy, ro);
 
-    public void SpawnGripLevel(int levelIndex, Transform basket)
-        => SpawnLevel(levelIndex, SpawnMode.Grip, basket, null);
+    /*──────────────── PUBLIC CUSTOM SPAWN API ───────────*/
+    public void SpawnCustomReach(List<Vector3Int> coords)                                               => SpawnCustom(coords, SpawnMode.Reach, null,     null,     null);
+    public void SpawnCustomGrip (List<Vector3Int> coords, Transform basket)                             => SpawnCustom(coords, SpawnMode.Grip,  basket,   null,     null);
+    public void SpawnCustomCarry(List<Vector3Int> coords, Transform basket)                             => SpawnCustom(coords, SpawnMode.Carry, basket,   null,     null);
+    public void SpawnCustomSort (List<Vector3Int> coords, Transform healthy, Transform ro, List<AppleKind> kinds = null)
+                                                                                                        => SpawnCustom(coords, SpawnMode.Sort,  healthy, ro, kinds);
 
-    public void SpawnCarryLevel(int levelIndex, Transform basket)
-        => SpawnLevel(levelIndex, SpawnMode.Carry, basket, null);
-
-    public void SpawnSortLevel(int levelIndex, Transform healthyBasket, Transform rottenBasket)
-        => SpawnLevel(levelIndex, SpawnMode.Sort, healthyBasket, rottenBasket);
-
-    /*--------------------------------------------------------------
-     * Ana spawn metodu
-     *--------------------------------------------------------------*/
-    void SpawnLevel(int levelIndex, SpawnMode mode, Transform basketA, Transform basketB)
+    /*──────────────── GRID HESAP ────────────────────────*/
+    void BuildGrid()
     {
-        if (!applePrefab || !healthyMat)
-        {
-            Debug.LogError("RowAppleSpawner: Prefab / materials missing.", this);
-            return;
-        }
+        xs = BuildAxis(xMin, xMax, xCount);
+        ys = BuildAxis(yMin, yMax, yCount);
+        zs = BuildAxis(zMin, zMax, zCount);
+    }
 
-        var cam = targetCamera ? targetCamera : Camera.main;
-        if (!cam)
+    static float[] BuildAxis(float min, float max, int count)
+    {
+        if (count <= 1) return new[] { (min + max) * 0.5f };
+        float[] arr = new float[count];
+        float step  = (max - min) / (count - 1);
+        for (int i = 0; i < count; i++) arr[i] = min + step * i;
+        return arr;
+    }
+
+    /*──────────────── LEVEL SPAWN İÇ ────────────────────*/
+    void SpawnLevel(int level, SpawnMode mode, Transform basketA, Transform basketB)
+    {
+        if (!ValidatePrefab()) return;
+        var cam = GetCam();   if (!cam) return;
+
+        ClearRow();
+        BuildGrid();
+
+        int li = Mathf.Clamp(level, 0, Mathf.Min(yCount, zCount) - 1);
+        float yy = ys[li];
+        float zz = zs[li];
+
+        // kamera baz & el offset
+        GetSpawnBasis(cam.transform, out var basisPos, out var right, out var up, out var fwd);
+
+        if (layout == Layout.Line)
         {
-            Debug.LogError("RowAppleSpawner: No camera available to anchor grid.", this);
+            for (int xi = 0; xi < xCount; xi++)
+            {
+                Vector3 pos = basisPos + right * xs[xi] + up * yy + fwd * zz;
+                SpawnApple(pos, cam.transform, mode, basketA, basketB, AppleKind.Healthy);
+            }
+        }
+        else // Arc
+        {
+            float radius = Mathf.Max(0f, zz + arcCenterBias);
+            for (int xi = 0; xi < xCount; xi++)
+            {
+                float ang = IndexToAngle(xi, xCount, arcAngleDeg);
+                Vector3 dir = Quaternion.AngleAxis(ang, up) * fwd;
+                Vector3 pos = basisPos + up * yy + dir * radius;
+                SpawnApple(pos, cam.transform, mode, basketA, basketB, AppleKind.Healthy);
+            }
+        }
+    }
+
+    /*──────────────── CUSTOM SPAWN İÇ ───────────────────*/
+    void SpawnCustom(List<Vector3Int> coords, SpawnMode mode, Transform basketA, Transform basketB, List<AppleKind> kinds)
+    {
+        if (!ValidatePrefab()) return;
+        var cam = GetCam();   if (!cam) return;
+        if (coords == null || coords.Count == 0)
+        {
+            Debug.LogWarning("RowAppleSpawner: SpawnCustom empty list.");
             return;
         }
 
         ClearRow();
-        BuildGrid(); // inspector değişikliklerini yakala
+        BuildGrid();
 
-        // Level 0..(min(yCount,zCount)-1)
-        int li = Mathf.Clamp(levelIndex, 0, Mathf.Min(yCount, zCount) - 1);
-        float y = _ys[li];
-        float z = _zs[li];
+        GetSpawnBasis(cam.transform, out var basisPos, out var right, out var up, out var fwd);
 
-        // Kamera baz
-        Transform ct = cam.transform;
-        Vector3 camPos = ct.position + camSpaceYOffset;
-
-        // El-ofseti uygula (sağ/sol)
-        float sign = (activeHand == HandSide.Right) ? 1f : -1f;
-        camPos += ct.right * handSideOffset * sign;
-
-        Vector3 camRight   = ct.right;
-        Vector3 camUp      = ct.up;
-        Vector3 camForward = ct.forward;
-
-        if (layout == Layout.Line)
+        for (int i = 0; i < coords.Count; i++)
         {
-            SpawnLine(mode, basketA, basketB, li, y, z, camPos, camRight, camUp, camForward, ct);
-        }
-        else // ArcHorizontal
-        {
-            SpawnArcHorizontal(mode, basketA, basketB, li, y, z, camPos, camRight, camUp, camForward, ct);
-        }
-    }
+            Vector3Int gi = coords[i];
+            int xi = Mathf.Clamp(gi.x, 0, xCount - 1);
+            int yi = Mathf.Clamp(gi.y, 0, yCount - 1);
+            int zi = Mathf.Clamp(gi.z, 0, zCount - 1);
 
-    /*--------------------------------------------------------------
-     * LINE yerleşimi
-     *--------------------------------------------------------------*/
-    void SpawnLine(SpawnMode mode,
-                   Transform basketA,
-                   Transform basketB,
-                   int li,
-                   float y, float z,
-                   Vector3 camPos,
-                   Vector3 camRight,
-                   Vector3 camUp,
-                   Vector3 camForward,
-                   Transform camT)
-    {
-        for (int xi = 0; xi < xCount; xi++)
-        {
-            float x = _xs[xi];
-            Vector3 worldPos = camPos + camRight * x + camUp * y + camForward * z;
-            SpawnApple(worldPos, camPos, camT, mode, basketA, basketB);
+            Vector3 pos;
+            if (layout == Layout.Line)
+            {
+                pos = basisPos + right * xs[xi] + up * ys[yi] + fwd * zs[zi];
+            }
+            else // Arc
+            {
+                float radius = Mathf.Max(0f, zs[zi] + arcCenterBias);
+                float ang    = IndexToAngle(xi, xCount, arcAngleDeg);
+                Vector3 dir  = Quaternion.AngleAxis(ang, up) * fwd;
+                pos = basisPos + up * ys[yi] + dir * radius;
+            }
+
+            AppleKind kind = AppleKind.Healthy;
+            if (mode == SpawnMode.Sort)
+            {
+                if (kinds != null && i < kinds.Count) kind = kinds[i];
+                else kind = (Random.value < 0.5f) ? AppleKind.Healthy : AppleKind.Rotten;
+            }
+
+            SpawnApple(pos, cam.transform, mode, basketA, basketB, kind);
         }
     }
 
-    /*--------------------------------------------------------------
-     * ARC yerleşimi (yatay)
-     *--------------------------------------------------------------*/
-    void SpawnArcHorizontal(SpawnMode mode,
-                            Transform basketA,
-                            Transform basketB,
-                            int li,
-                            float y, float z,
-                            Vector3 camPos,
-                            Vector3 camRight,
-                            Vector3 camUp,
-                            Vector3 camForward,
-                            Transform camT)
+    /*──────────────── ELMA YARATMA ──────────────────────*/
+    void SpawnApple(Vector3 worldPos, Transform camT, SpawnMode mode, Transform basketA, Transform basketB, AppleKind kind)
     {
-        float radius = Mathf.Max(0.0f, z + arcCenterBias);
+        Quaternion rot = GetSpawnRotation(rotationMode, camT, worldPos);
 
-        float totalAng = arcAngleDeg;
-        if (xCount < 2) totalAng = 0f;
-        float stepAng = (xCount > 1) ? (totalAng / (xCount - 1)) : 0f;
-        float startAng = -totalAng * 0.5f;
+        var apple = Instantiate(applePrefab, worldPos, rot, transform);
 
-        for (int i = 0; i < xCount; i++)
-        {
-            float ang = startAng + stepAng * i;
-            Quaternion yaw = Quaternion.AngleAxis(ang, camUp);
-            Vector3 dir = yaw * camForward;
-
-            Vector3 worldPos = camPos + camUp * y + dir * radius;
-            SpawnApple(worldPos, camPos, camT, mode, basketA, basketB);
-        }
-    }
-
-    /*--------------------------------------------------------------
-     * Ortak elma oluşturma
-     *--------------------------------------------------------------*/
-    void SpawnApple(Vector3 worldPos,
-                    Vector3 camPos,
-                    Transform camT,
-                    SpawnMode mode,
-                    Transform basketA,
-                    Transform basketB)
-    {
-        Quaternion worldRot = GetSpawnRotation(rotationMode, camT, worldPos, camPos);
-
-        var apple = Instantiate(applePrefab, worldPos, worldRot, transform);
-
-        // açılış animasyonu
+        // spawn FX
         apple.transform.localScale = Vector3.zero;
-        apple.transform
-             .DOScale(Vector3.one * appleScale, spawnTweenDur)
-             .SetEase(spawnEase);
+        apple.transform.DOScale(Vector3.one * appleScale, spawnTweenDur).SetEase(spawnEase);
 
-        // varsayılan materyal
+        // varsayılan materyal (Sort'ta override edilecek)
         var rend = apple.transform.GetChild(0).GetComponent<Renderer>();
-        rend.material = healthyMat;
+        if (rend) rend.material = healthyMat;
 
         switch (mode)
         {
@@ -272,111 +222,120 @@ public class RowAppleSpawner : MonoBehaviour
                 break;
 
             case SpawnMode.Grip:
-                {
-                    var grip = apple.AddComponent<AppleGripTarget>();
-                    // grip.Init(basketA); // hazır olduğunda aç
-                }
+                apple.AddComponent<AppleGripTarget>();      // BasketHoverZone ile çalışır
                 break;
 
             case SpawnMode.Carry:
-                {
-                    var carry = apple.AddComponent<AppleCarryTarget>();
-                    carry.Init(basketA);
-                }
+                var carry = apple.AddComponent<AppleCarryTarget>();
+                carry.Init(basketA);
                 break;
 
             case SpawnMode.Sort:
-                {
-                    AppleKind kind = (Random.value < 0.5f) ? AppleKind.Healthy : AppleKind.Rotten;
-                    var sort = apple.AddComponent<AppleSortTarget>();
-                    sort.Init(basketA, basketB, kind);
-                    if (kind == AppleKind.Rotten && rottenMat != null)
-                        rend.material = rottenMat;
-                }
+                var sort = apple.AddComponent<AppleSortTarget>();
+                sort.Init(basketA, basketB, kind);
+                if (kind == AppleKind.Rotten && rottenMat)
+                    rend.material = rottenMat;
                 break;
         }
     }
 
-    Quaternion GetSpawnRotation(RotationMode mode, Transform camT, Vector3 applePos, Vector3 camPos)
+    /*──────────────── HELPERLAR ─────────────────────────*/
+    bool ValidatePrefab()
+    {
+        if (!applePrefab)
+        {
+            Debug.LogError("RowAppleSpawner: applePrefab missing.", this);
+            return false;
+        }
+        if (!healthyMat)
+        {
+            Debug.LogError("RowAppleSpawner: healthyMat missing.", this);
+            return false;
+        }
+        return true;
+    }
+
+    Camera GetCam()
+    {
+        if (targetCamera) return targetCamera;
+        if (Camera.main)  return Camera.main;
+        Debug.LogError("RowAppleSpawner: no camera found.", this);
+        return null;
+    }
+
+    void GetSpawnBasis(Transform camT, out Vector3 pos, out Vector3 right, out Vector3 up, out Vector3 fwd)
+    {
+        pos   = camT.position + camSpaceYOffset;
+        right = camT.right;
+        up    = camT.up;
+        fwd   = camT.forward;
+
+        // el offset uygulama
+        float sign = (activeHand == HandSide.Right) ? 1f : -1f;
+        pos += right * handSideOffset * sign;
+    }
+
+    static float IndexToAngle(int i, int count, float totalAng)
+    {
+        if (count <= 1) return 0f;
+        float start = -totalAng * 0.5f;
+        float step  = totalAng / (count - 1);
+        return start + step * i;
+    }
+
+    Quaternion GetSpawnRotation(RotationMode mode, Transform camT, Vector3 applePos)
     {
         switch (mode)
         {
             default:
             case RotationMode.PrefabRotation:
-                return Quaternion.identity; // Prefab'ın kendi rotasyonu
+                return Quaternion.identity;
+
             case RotationMode.MatchCamera:
                 return camT.rotation;
+
             case RotationMode.FaceCameraBillboard:
-                Vector3 dirToCam = (camPos - applePos).sqrMagnitude < 1e-6f
-                    ? -camT.forward
-                    : (camPos - applePos).normalized;
-                return Quaternion.LookRotation(dirToCam, camT.up);
+                Vector3 dir = camT.position - applePos;
+                if (dir.sqrMagnitude < 1e-6f) dir = -camT.forward;
+                return Quaternion.LookRotation(dir.normalized, camT.up);
         }
     }
 
 #if UNITY_EDITOR
-    /*--------------------------------------------------------------
-     * Editörde debug çizimi
-     *--------------------------------------------------------------*/
+    /*──────────────── GİZMO ─────────────────────────────*/
     void OnDrawGizmosSelected()
     {
-        var cam = targetCamera ? targetCamera : Camera.main;
+        var cam = GetCam();
         if (!cam) return;
 
         BuildGrid();
-
-        Transform ct = cam.transform;
-        Vector3 camPos = ct.position + camSpaceYOffset;
-
-        // Hand offset de editörde gösterilsin:
-        float sign = (activeHand == HandSide.Right) ? 1f : -1f;
-        camPos += ct.right * handSideOffset * sign;
+        GetSpawnBasis(cam.transform, out var basisPos, out var right, out var up, out var fwd);
 
         Gizmos.color = Color.yellow;
-        const float gizRadius = 0.01f;
+        const float R = 0.01f;
 
         if (layout == Layout.Line)
         {
-            Vector3 camRight   = ct.right;
-            Vector3 camUp      = ct.up;
-            Vector3 camForward = ct.forward;
-
             for (int yi = 0; yi < yCount; yi++)
+            for (int zi = 0; zi < zCount; zi++)
+            for (int xi = 0; xi < xCount; xi++)
             {
-                for (int zi = 0; zi < zCount; zi++)
-                {
-                    for (int xi = 0; xi < xCount; xi++)
-                    {
-                        Vector3 world =
-                            camPos +
-                            camRight   * _xs[xi] +
-                            camUp      * _ys[yi] +
-                            camForward * _zs[zi];
-                        Gizmos.DrawWireSphere(world, gizRadius);
-                    }
-                }
+                Vector3 p = basisPos + right * xs[xi] + up * ys[yi] + fwd * zs[zi];
+                Gizmos.DrawWireSphere(p, R);
             }
         }
-        else // ArcHorizontal
+        else
         {
             for (int yi = 0; yi < yCount; yi++)
+            for (int zi = 0; zi < zCount; zi++)
             {
-                float y = _ys[yi];
-                for (int zi = 0; zi < zCount; zi++)
+                float radius = Mathf.Max(0f, zs[zi] + arcCenterBias);
+                for (int xi = 0; xi < xCount; xi++)
                 {
-                    float radius = Mathf.Max(0.0f, _zs[zi] + arcCenterBias);
-                    float totalAng = arcAngleDeg;
-                    float stepAng = (xCount > 1) ? (totalAng / (xCount - 1)) : 0f;
-                    float startAng = -totalAng * 0.5f;
-
-                    for (int xi = 0; xi < xCount; xi++)
-                    {
-                        float ang = startAng + stepAng * xi;
-                        Quaternion yaw = Quaternion.AngleAxis(ang, ct.up);
-                        Vector3 dir = yaw * ct.forward;
-                        Vector3 world = camPos + ct.up * y + dir * radius;
-                        Gizmos.DrawWireSphere(world, gizRadius);
-                    }
+                    float ang = IndexToAngle(xi, xCount, arcAngleDeg);
+                    Vector3 dir = Quaternion.AngleAxis(ang, up) * fwd;
+                    Vector3 p = basisPos + up * ys[yi] + dir * radius;
+                    Gizmos.DrawWireSphere(p, R);
                 }
             }
         }

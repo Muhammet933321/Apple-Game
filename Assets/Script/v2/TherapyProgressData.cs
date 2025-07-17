@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum TherapyMode { Reach = 1, Grip, Carry, Sort }
+public enum TherapyMode { Reach = 1, Grip, Carry, Sort,Custom }
 
 [System.Serializable]
 public class TherapyProgressData

@@ -1,77 +1,16 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
     ActivityManager Curr => GameModeController.Instance.Current;
-    SessionWatcher sessionWatcher;
+    public CustomActivityManager customActivityManager;
 
-    private void Start()
+    public void SetCustomModeSettings(List<Vector3Int> customPositions,TherapyMode mode)
     {
-        sessionWatcher = FindObjectOfType<SessionWatcher>();
-
-        if (sessionWatcher != null)
-        {
-            sessionWatcher.OnLevelChanged += HandleLevelChanged;
-            sessionWatcher.OnModeChanged += HandleModeChanged;
-            sessionWatcher.OnCurlChanged += HandleCurlChanged;
-            sessionWatcher.OnHandChanged += HandleHandChanged;
-            sessionWatcher.OnSessionStarted += HandleSessionStarted;
-            sessionWatcher.OnSessionEnded += HandleSessionEnded;
-        }
-        else
-        {
-            Debug.LogError("SessionWatcher not found in scene.");
-        }
+        customActivityManager.gridCoords = customPositions;
+        customActivityManager.interactionType = mode;
     }
-
-    private void OnDestroy()
-    {
-        if (sessionWatcher != null)
-        {
-            sessionWatcher.OnLevelChanged -= HandleLevelChanged;
-            sessionWatcher.OnModeChanged -= HandleModeChanged;
-            sessionWatcher.OnCurlChanged -= HandleCurlChanged;
-            sessionWatcher.OnHandChanged -= HandleHandChanged;
-            sessionWatcher.OnSessionStarted -= HandleSessionStarted;
-            sessionWatcher.OnSessionEnded -= HandleSessionEnded;
-        }
-    }
-
-    private void HandleLevelChanged(int levelIndex)
-    {
-        Curr?.StartLevelAt(levelIndex);
-    }
-
-    private void HandleModeChanged(int mode)
-    {
-        GameModeController.Instance.SwitchMode((TherapyMode)mode);
-    }
-
-    private void HandleCurlChanged(int curl)
-    {
-        Debug.Log($"Curl updated to {curl}");
-        // You can add custom behavior if needed.
-    }
-
-    private void HandleHandChanged(int hand)
-    {
-        Debug.Log($"Hand updated to {hand}");
-        // You can update visuals or logic for left/right hand preference.
-    }
-
-    private void HandleSessionStarted()
-    {
-        Debug.Log("Session started.");
-        // Optional: Initialize UI, sounds, etc.
-    }
-
-    private void HandleSessionEnded()
-    {
-        Debug.Log("Session ended.");
-        // Optional: Cleanup or reset the state.
-        Curr?.Finish();
-    }
-
     void Update()
     {
         /*── MOD seçimi : Z X C V ─────────────────────*/
@@ -83,6 +22,11 @@ public class InputManager : MonoBehaviour
             GameModeController.Instance.SwitchMode(TherapyMode.Carry);
         else if (Input.GetKeyDown(KeyCode.V))
             GameModeController.Instance.SwitchMode(TherapyMode.Sort);
+        else if (Input.GetKeyDown(KeyCode.B))
+        {
+            GameModeController.Instance.SwitchMode(TherapyMode.Custom); 
+            Curr?.StartLevelAt(0);
+        }
 
         /*── LEVEL seçimi : 1-5 ───────────────────────*/
         if (Input.GetKeyDown(KeyCode.Alpha1)) Curr?.StartLevelAt(0);

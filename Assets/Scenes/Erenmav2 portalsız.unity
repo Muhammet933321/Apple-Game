@@ -8533,6 +8533,7 @@ Transform:
   - {fileID: 998077799}
   - {fileID: 2074968319}
   - {fileID: 2142936925}
+  - {fileID: 1550420764}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &227740344
@@ -56272,6 +56273,65 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4785000029750760, guid: 2802a8bdb7ea3354a8b0be8bfb9e7ac9, type: 3}
   m_PrefabInstance: {fileID: 1441035742}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1550420763
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1550420764}
+  - component: {fileID: 1550420765}
+  m_Layer: 0
+  m_Name: Custom
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1550420764
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550420763}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 227740343}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1550420765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550420763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40a98bcf07f3aae499a8830b59de78b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  countdownUI: {fileID: 1887120612}
+  countdownTime: 3
+  spawner: {fileID: 1627566681}
+  basketSpawner: {fileID: 1599723409}
+  dualBasketSpawner: {fileID: 1599723411}
+  interactionType: 1
+  gridCoords:
+  - {x: 0, y: 0, z: 0}
+  - {x: 2, y: 2, z: 1}
+  - {x: 2, y: 3, z: 0}
+  - {x: 0, y: 1, z: 2}
+  - {x: 3, y: 4, z: 2}
+  - {x: 2, y: 3, z: 2}
+  - {x: 4, y: 5, z: 2}
+  sortKinds: 0000000001000000
 --- !u!4 &1550615475 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4201455878151688, guid: 2aac377f4e1169d4d8a9b4f429327f9d, type: 3}
@@ -59415,12 +59475,12 @@ MonoBehaviour:
   rottenMat: {fileID: 2100000, guid: 1ddf64c80387382479fc7ac72130175e, type: 2}
   targetCamera: {fileID: 986764312}
   camSpaceYOffset: {x: 0, y: 0, z: 0}
-  rotationMode: 1
   activeHand: 0
   handSideOffset: 0.1
   layout: 1
   arcAngleDeg: 90
   arcCenterBias: 0
+  rotationMode: 1
   xMin: -0.4
   xMax: 0.4
   yMin: -0.2
