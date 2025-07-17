@@ -71052,6 +71052,130 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4894716211505796, guid: e6e2944b1db977a4b817db1e80c2e48f, type: 3}
   m_PrefabInstance: {fileID: 984715360}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1717778410
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1717778414}
+  - component: {fileID: 1717778413}
+  - component: {fileID: 1717778412}
+  - component: {fileID: 1717778411}
+  - component: {fileID: 1717778415}
+  m_Layer: 0
+  m_Name: Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1717778411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1717778410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e296dbc6765bd614e88056a64d634e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1717778412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1717778410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdb8336482f16b34eb02476d7dfbb569, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1717778413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1717778410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ab1ddece8ccb0d4b880e66478abce66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deviceID: 
+  device:
+    connectionStatus: 
+    deviceName: 
+    enable: 0
+    patientID: 
+  patientID: 
+  patient:
+    name: 
+    age: 0
+    diagnosis: 
+    isFemale: 0
+    note: 
+    customGames: 
+    romID: 
+    sessionCount: 0
+  session:
+    gameResultID: 
+    gameType: 
+    maxRomClibre: 0
+    minRomClibre: 0
+    romID: 
+  fingerGameResult:
+    gameType: 
+    score: 0
+    sessionID: 
+    apples: []
+    successRate: 0
+    takes: 0
+    mistakes: 0
+    notes: []
+  rom:
+    arm:
+      leftSpace: 0
+      rightSpace: 0
+    finger: []
+  appleGameConfig:
+    gameMode: 0
+    status: 0
+    level: 0
+--- !u!4 &1717778414
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1717778410}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.2844834, y: -4.751469, z: -22.489338}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1717778415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1717778410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe2d5baa8402c51468c7504ae39a789b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  progressLog: {fileID: 1389722765}
 --- !u!1001 &1717930033
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -85218,3 +85342,4 @@ SceneRoots:
   - {fileID: 2061386515}
   - {fileID: 227740343}
   - {fileID: 1701278906}
+  - {fileID: 1717778414}

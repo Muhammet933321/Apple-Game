@@ -1,9 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id">
-  <string name="gcm_defaultSenderId" translatable="false">386753603604</string>
-  <string name="google_storage_bucket" translatable="false">apple-harvest-vr.firebasestorage.app</string>
-  <string name="project_id" translatable="false">apple-harvest-vr</string>
-  <string name="google_api_key" translatable="false">AIzaSyBYJYB3mRtN7DyPreETEDqFE-LsgR7_LyQ</string>
-  <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBYJYB3mRtN7DyPreETEDqFE-LsgR7_LyQ</string>
-  <string name="google_app_id" translatable="false">1:386753603604:android:caaca16005fdafb5df1f01</string>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/firebase_database_url,@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id">
+  <string name="firebase_database_url" translatable="false">https://unityrehabilitationar-default-rtdb.europe-west1.firebasedatabase.app</string>
+  <string name="gcm_defaultSenderId" translatable="false">829647184082</string>
+  <string name="google_storage_bucket" translatable="false">unityrehabilitationar.firebasestorage.app</string>
+  <string name="project_id" translatable="false">unityrehabilitationar</string>
+  <string name="google_api_key" translatable="false">AIzaSyCS_0bcdOUjA_5ov_f4eV2nz3bzIJY3fn0</string>
+  <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCS_0bcdOUjA_5ov_f4eV2nz3bzIJY3fn0</string>
+  <string name="google_app_id" translatable="false">1:829647184082:android:052dde08ad15cf800f8d0b</string>
 </resources>
