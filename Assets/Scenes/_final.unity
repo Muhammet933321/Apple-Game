@@ -8548,6 +8548,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90222bd80b12a1046ae3386cf5417cb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  customActivityManager: {fileID: 1550420765}
+  spawner: {fileID: 1627566681}
 --- !u!114 &227740345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56322,7 +56324,7 @@ MonoBehaviour:
   spawner: {fileID: 1627566681}
   basketSpawner: {fileID: 1599723409}
   dualBasketSpawner: {fileID: 1599723411}
-  interactionType: 1
+  interactionType: 4
   gridCoords:
   - {x: 0, y: 0, z: 0}
   - {x: 2, y: 2, z: 1}

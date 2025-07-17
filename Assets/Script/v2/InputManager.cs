@@ -5,7 +5,12 @@ public class InputManager : MonoBehaviour
 {
     ActivityManager Curr => GameModeController.Instance.Current;
     public CustomActivityManager customActivityManager;
+    public RowAppleSpawner spawner;
 
+    public void SelectHand(RowAppleSpawner.HandSide hand)
+    {
+        spawner.SelectHand(hand);
+    }
     public void SetCustomModeSettings(List<Vector3Int> customPositions,TherapyMode mode)
     {
         customActivityManager.gridCoords = customPositions;

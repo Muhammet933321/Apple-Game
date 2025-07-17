@@ -238,6 +238,13 @@ public class RowAppleSpawner : MonoBehaviour
                 break;
         }
     }
+    
+    public void SelectHand(HandSide hand)
+    {
+        if (hand == activeHand) return; // değişiklik yok
+        activeHand = hand;
+        Debug.Log($"RowAppleSpawner: Active hand set to {activeHand}.");
+    }
 
     /*──────────────── HELPERLAR ─────────────────────────*/
     bool ValidatePrefab()
