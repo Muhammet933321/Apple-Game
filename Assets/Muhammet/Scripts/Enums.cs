@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -50,14 +51,23 @@ public class Session
 }
 
 [System.Serializable]
-public class FingerGameResult
+public class AppleGameResult
 {
+    public AppleGameResult()
+    {
+        handLogs = new List<BothHandLog>();
+        notes = new List<NoteResult>();
+    }
     public string gameType;
     public int score;
     public string sessionID;
 
     // appleGame özel alanlar
-    public List<AppleResult> apples;
+
+    public List<BothHandLog> handLogs;
+
+
+
     public float successRate;
 
     // fingerDance özel alanlar
@@ -65,6 +75,34 @@ public class FingerGameResult
     public int mistakes;
     public List<NoteResult> notes;
 }
+
+[System.Serializable]
+public class BothHandLog
+{
+    public BothHandLog()
+    {
+        handleLogsLeft = new List<HandLog> ();
+        handleLogsRight = new List<HandLog> ();
+    }
+    public List<HandLog> handleLogsRight;
+    public List<HandLog> handleLogsLeft;
+}
+
+
+
+[System.Serializable]
+public class HandLog
+{
+    public HandLog()
+    {
+        time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    }
+    public Vector3 position;
+    public Quaternion rotation;
+    public bool isGrab;
+    public long time;
+}
+
 
 [System.Serializable]
 public class AppleResult

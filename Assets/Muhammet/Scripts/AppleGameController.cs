@@ -30,6 +30,7 @@ public class AppleGameController : MonoBehaviour
     /// <param name="level">Baþlatýlacak seviye.</param>
     public void StartGame(AppleGameMode mode, int level)
     {
+        dataBase.appleGameResult.handLogs.Add(new BothHandLog());
         // 1. Gelen moda göre doðru terapi modunu seçmek için switch-case yapýsý
         switch (mode)
         {
@@ -80,14 +81,21 @@ public class AppleGameController : MonoBehaviour
 
         if (firebaseDataBaseService != null && progressLog != null)
         {
-            // Yeni 'async void' metodumuzu çaðýrýyoruz.
-            // Bu çaðrý bir uyarý vermez ve kod akýþý burada beklemez.
+            // Kopyayý al, güncelle, geri ata
+            int lastIndex = progressLog.history.Count - 1;
+            var entry = progressLog.history[lastIndex];
+            var handLogs = dataBase.appleGameResult.handLogs;
+            entry.handLogs = handLogs[handLogs.Count - 1];
+            progressLog.history[lastIndex] = entry;
+
             firebaseDataBaseService.SaveProgressHistory_FireAndForget(progressLog.history);
+
         }
         else
         {
             Debug.LogError("Firebase servisi veya ProgressLog atanmamýþ! Kayýt yapýlamadý.");
         }
     }
+
 
 }

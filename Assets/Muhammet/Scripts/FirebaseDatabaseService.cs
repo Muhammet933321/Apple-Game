@@ -9,7 +9,7 @@ public class FirebaseDatabaseService : MonoBehaviour
     private DatabaseReference dbRef;
 
     private DataBase database;
-   
+
     void Awake()
     {
         database = GetComponent<DataBase>();
@@ -18,6 +18,7 @@ public class FirebaseDatabaseService : MonoBehaviour
         Debug.Log("Device Unique ID: " + deviceId);
         dbRef = FirebaseDatabase.DefaultInstance.RootReference;
         StartCoroutine(EnableDevice());
+        
     }
 
 
@@ -156,7 +157,7 @@ public class FirebaseDatabaseService : MonoBehaviour
         }
 
         // --- APPLE DIRECTION AYARI (YENÝ EKLENDÝ) ---
-        var appleDirectionSnapshot = snapshot.Child("appleDirection");
+        var appleDirectionSnapshot = snapshot.Child("appleDirectory");
         if (appleDirectionSnapshot.Exists && appleDirectionSnapshot.HasChildren)
         {
             // Listeyi her seferinde temizleyip yeniden doldurmak daha güvenlidir.
@@ -167,9 +168,9 @@ public class FirebaseDatabaseService : MonoBehaviour
                 try
                 {
                     // x, y, z deðerlerini float olarak oku
-                    float.TryParse(directionNode.Child("x").Value?.ToString(), out float x);
-                    float.TryParse(directionNode.Child("y").Value?.ToString(), out float y);
-                    float.TryParse(directionNode.Child("z").Value?.ToString(), out float z);
+                    float.TryParse(directionNode.Child("position").Child("0").Value?.ToString(), out float x);
+                    float.TryParse(directionNode.Child("position").Child("1").Value?.ToString(), out float y);
+                    float.TryParse(directionNode.Child("position").Child("2").Value?.ToString(), out float z);
 
                     // Yeni Vector3 oluþtur ve listeye ekle
                     config.appleDirections.Add(new Vector3(x, y, z));
@@ -196,11 +197,57 @@ public class FirebaseDatabaseService : MonoBehaviour
     /// <summary>
     /// Bu, iþlemin sonucunu bekleyen ana async metottur. Hata yönetimi burada yapýlýr.
     /// </summary>
+    //public async Task SaveProgressHistory(List<ProgressLog.LevelEntry> history)
+    //{
+
+
+
+    //    if (string.IsNullOrEmpty(database.patientID) || database.patient == null)
+    //    {
+    //        // Hata fýrlatarak çaðýran metoda sorunu bildirebiliriz.
+    //        throw new System.InvalidOperationException("Hasta bilgileri eksik, baþarý kaydý yapýlamýyor!");
+    //    }
+
+    //    if (history == null || history.Count == 0)
+    //    {
+    //        Debug.LogWarning("Kaydedilecek bir baþarý geçmiþi bulunamadý.");
+    //        return;
+    //    }
+
+    //    string path1 = $"gameResults/{database.patientID}_results_{database.patient.sessionCount}";
+    //    string json1 = JsonUtility.ToJson(new ProgressHistoryWrapper { history = history });
+
+    //    // Asýl veritabaný yazma iþlemi. Hata olursa exception fýrlatýr.
+    //    await dbRef.Child(path1).SetRawJsonValueAsync(json1);
+
+    //    string path2 = $"gameResults/{database.patientID}_results_{database.patient.sessionCount}/{history.Count-1}";
+
+    //    string json2 = JsonUtility.ToJson(database.appleGameResult.handleLogsRight);
+    //    await dbRef.Child(path2).SetRawJsonValueAsync(json2);
+
+    //    string json3 = JsonUtility.ToJson(database.appleGameResult.handleLogsLight);
+    //    await dbRef.Child(path2).SetRawJsonValueAsync(json3);
+    //}
+
+
+
+    // JSON yardýmcý sýnýfý
+    [System.Serializable]
+    private class ProgressHistoryWrapper
+    {
+        public List<ProgressLog.LevelEntry> history;
+    }
+
+    [System.Serializable]
+    private class HandLogWrapper
+    {
+        public List<HandLog> logs;
+    }
+
     public async Task SaveProgressHistory(List<ProgressLog.LevelEntry> history)
     {
         if (string.IsNullOrEmpty(database.patientID) || database.patient == null)
         {
-            // Hata fýrlatarak çaðýran metoda sorunu bildirebiliriz.
             throw new System.InvalidOperationException("Hasta bilgileri eksik, baþarý kaydý yapýlamýyor!");
         }
 
@@ -210,12 +257,43 @@ public class FirebaseDatabaseService : MonoBehaviour
             return;
         }
 
-        string path = $"gameResults/{database.patientID}_results_{database.patient.sessionCount}";
-        string json = JsonUtility.ToJson(new ProgressHistoryWrapper { history = history });
 
-        // Asýl veritabaný yazma iþlemi. Hata olursa exception fýrlatýr.
-        await dbRef.Child(path).SetRawJsonValueAsync(json);
+
+        
+
+
+        string path1 = $"gameResults/{database.patientID}_results_{database.patient.sessionCount}";
+        string json1 = JsonUtility.ToJson(new ProgressHistoryWrapper { history = history });
+
+        await dbRef.Child(path1).SetRawJsonValueAsync(json1);
+
+        //string path2Base = $"{path1}/history/{history.Count - 1}";
+
+        // Sað el loglarýný sarmalayýcý ile yaz
+        //if (database.appleGameResult.handleLogsRight != null && database.appleGameResult.handleLogsRight.Count > 0)
+        //{
+        //    var rightWrapper = new HandLogWrapper { logs = database.appleGameResult.handleLogsRight };
+        //    string jsonRight = JsonUtility.ToJson(rightWrapper);
+        //    await dbRef.Child(path2Base).Child("rightHandLogs").SetRawJsonValueAsync(jsonRight);
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("Right hand logs boþ, Firebase'e yazýlmadý.");
+        //}
+
+        //// Sol el loglarýný sarmalayýcý ile yaz
+        //if (database.appleGameResult.handleLogsLight != null && database.appleGameResult.handleLogsLight.Count > 0)
+        //{
+        //    var leftWrapper = new HandLogWrapper { logs = database.appleGameResult.handleLogsLight };
+        //    string jsonLeft = JsonUtility.ToJson(leftWrapper);
+        //    await dbRef.Child(path2Base).Child("leftHandLogs").SetRawJsonValueAsync(jsonLeft);
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("Left hand logs boþ, Firebase'e yazýlmadý.");
+        //}
     }
+
 
     // --- YENÝ FONKSÝYON ---
     /// <summary>
@@ -239,9 +317,35 @@ public class FirebaseDatabaseService : MonoBehaviour
     }
 
     // JSON yardýmcý sýnýfý
-    [System.Serializable]
-    private class ProgressHistoryWrapper
+    //[System.Serializable]
+    //private class ProgressHistoryWrapper
+    //{
+    //    public List<ProgressLog.LevelEntry> history;
+    //}
+
+
+    ///
+    ///
+    /// Clear DataBase
+    ///
+    ///
+
+    private void ClearDatabase()
     {
-        public List<ProgressLog.LevelEntry> history;
+        FirebaseDatabase.DefaultInstance
+        .RootReference
+        .Child("gameResults")
+        .RemoveValueAsync(); // Bu, "gameResults" altýndaki tüm verileri siler
+
+
+        FirebaseDatabase.DefaultInstance
+.RootReference
+.Child("gameConfigs")
+.RemoveValueAsync(); // Bu, "gameResults" altýndaki tüm verileri siler
+        FirebaseDatabase.DefaultInstance
+.RootReference
+.Child("sessions")
+.RemoveValueAsync(); // Bu, "gameResults" altýndaki tüm verileri siler
+
     }
 }

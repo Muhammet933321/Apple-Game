@@ -16,7 +16,7 @@ public class DataBase : MonoBehaviour
     public Session session;
 
     [Header("GameResultForFinger Instance")]
-    public FingerGameResult fingerGameResult;
+    public AppleGameResult appleGameResult;
 
     [Header("ROM Instance")]
     public Rom rom;
@@ -26,12 +26,12 @@ public class DataBase : MonoBehaviour
 
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

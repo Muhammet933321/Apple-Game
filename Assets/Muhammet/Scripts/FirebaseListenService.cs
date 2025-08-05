@@ -1,4 +1,5 @@
 using Firebase.Database;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -58,6 +59,14 @@ public class FirebaseListenService : MonoBehaviour
         dataBase.patientID = newPatientID;
         dataBase.device.patientID = newPatientID;
 
+
+        StartCoroutine(LoadPatientWait(newPatientID));
+
+    }
+    
+    IEnumerator LoadPatientWait(string newPatientID)
+    {
+        yield return new WaitForSeconds(1f);
         databaseService.LoadPatientAsync(newPatientID).ContinueWith(task =>
         {
             if (task.IsFaulted || task.Result == null)
@@ -168,7 +177,7 @@ public class FirebaseListenService : MonoBehaviour
             else
             {
                 Debug.Log("Game Starting...");
-                appleGameController.StartGame(config.gameMode,config.level);
+                appleGameController.StartGame(config.gameMode, config.level);
             }
         }
         if (config.status == AppleGameStatus.finish)

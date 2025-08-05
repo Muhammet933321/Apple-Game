@@ -13,13 +13,14 @@ public class ProgressLog : MonoBehaviour
         public int    level;      // 0,1,2,…
         public int    percent;    // 0-100
         public string timestamp;  // "2025-07-07 20:15"
-
+        public BothHandLog handLogs;
         public LevelEntry(string act, int lvl, int pct)
         {
             activity  = act;
             level     = lvl;
             percent   = pct;
             timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+            handLogs = new BothHandLog();
         }
     }
 

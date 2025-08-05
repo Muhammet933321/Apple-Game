@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/_final.unity
+    guid: e4d531fbd21e431498fe67f3800d809a
+  - enabled: 1
     path: Assets/Scenes/Erenmav2 1.unity
     guid: 584a458a656904cfaadcbf3b799aafb1
   m_configObjects:
